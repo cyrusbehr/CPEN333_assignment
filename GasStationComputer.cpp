@@ -19,11 +19,11 @@ GasStationComputer::GasStationComputer() {
     m_pump3StatusPtr = static_cast<PumpStatus*>(pump3DataPool.LinkDataPool());
     m_pump4StatusPtr = static_cast<PumpStatus*>(pump4DataPool.LinkDataPool());
     
-    // TODO: Create 4 child threads to read from Gas Pump Data Pool
-    m_pump1StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::readPumpStatus, ACTIVE, m_pump1StatusPtr));
-    m_pump2StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::readPumpStatus, ACTIVE, m_pump2StatusPtr));
-    m_pump3StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::readPumpStatus, ACTIVE, m_pump3StatusPtr));
-    m_pump4StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::readPumpStatus, ACTIVE, m_pump4StatusPtr));
+    // Create 4 child threads to read from Gas Pump Data Pool
+    m_pump1StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::displayPumpStatus, ACTIVE, m_pump1StatusPtr));
+    m_pump2StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::displayPumpStatus, ACTIVE, m_pump2StatusPtr));
+    m_pump3StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::displayPumpStatus, ACTIVE, m_pump3StatusPtr));
+    m_pump4StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::displayPumpStatus, ACTIVE, m_pump4StatusPtr));
 }
 
 int GasStationComputer::displayFuelTankStatus(void* args) {
@@ -31,7 +31,7 @@ int GasStationComputer::displayFuelTankStatus(void* args) {
     return 0;
 }
 
-int GasStationComputer::readPumpStatus(void* args) {
+int GasStationComputer::displayPumpStatus(void* args) {
     PumpStatus* status = static_cast<PumpStatus*>(args);
     // TODO: Do something with data pool data, such as print it out to the console
     return 0;

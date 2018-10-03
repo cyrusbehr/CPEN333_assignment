@@ -1,5 +1,12 @@
 #include <string>
 
+enum class GasGrade {
+    G87,
+    G89,
+    G91,
+    G92
+};
+
 struct FuelTankStatus {
     float m_fuelTank1 = 0;
     float m_fuelTank2 = 0;
@@ -12,4 +19,6 @@ struct PumpStatus {
     UINT m_creditCardNum = 0;
     float m_liters = 0.f;
     float m_price = 0.f;
+    GasGrade m_grade = GasGrade::G87;
 };
+

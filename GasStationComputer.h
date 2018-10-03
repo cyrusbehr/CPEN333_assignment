@@ -30,10 +30,9 @@ struct Transaction {
 class GasStationComputer {
 public:
     GasStationComputer();
-
 private:
     int displayFuelTankStatus(void* args);
-    int readPumpStatus(void* args);
+    int displayPumpStatus(void* args);
 
     std::vector<Transaction> m_transactions;
 
