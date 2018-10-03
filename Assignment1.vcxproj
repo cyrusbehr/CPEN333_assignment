@@ -123,6 +123,9 @@
     <ClInclude Include="..\rt.h" />
     <ClInclude Include="GasStationComputer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="ImGuiDirectX\imgui\LICENSE.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

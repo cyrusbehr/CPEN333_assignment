@@ -1,7 +1,5 @@
 #pragma once
-#include <string>
-#include <vector>
-#include "..\rt.h"
+#include "IncludeFiles.h"
 #include "Shared.h"
 
 #ifndef __GasStationComputer__
