@@ -1,4 +1,8 @@
+#pragma once
 #include "IncludeFiles.h"
+#ifndef __Shared__
+#define __Shared__
+constexpr int PIPE_SIZE = 1024;
 
 enum class GasGrade {
     G87,
@@ -16,9 +20,17 @@ struct FuelTankStatus {
 
 struct PumpStatus {
     std::string m_customerName = "";
-    UINT m_creditCardNum = 0;
+    int m_creditCardNum = 0;
     float m_liters = 0.f;
     float m_price = 0.f;
     GasGrade m_grade = GasGrade::G87;
 };
 
+// Return random number generated between min and max, inclusive 
+inline int getRandNum(int min, int max) {
+    return rand() % (max - min + 1) + min;
+}
+
+
+
+#endif

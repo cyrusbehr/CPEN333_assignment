@@ -24,6 +24,12 @@ GasStationComputer::GasStationComputer() {
     m_pump2StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::displayPumpStatus, ACTIVE, m_pump2StatusPtr));
     m_pump3StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::displayPumpStatus, ACTIVE, m_pump3StatusPtr));
     m_pump4StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::displayPumpStatus, ACTIVE, m_pump4StatusPtr));
+
+    // TODO create the producer consumer semaphors
+
+    // TODO we need to launch the child process (pump main function)
+
+    // TODO we need rendevous in all of our child threads!
 }
 
 int GasStationComputer::displayFuelTankStatus(void* args) {
