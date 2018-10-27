@@ -7,5 +7,6 @@
 #include <chrono>
 #include <thread>
 #include <assert.h>
+#include <map>
 #endif // !__IncludeFiles__
 

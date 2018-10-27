@@ -5,6 +5,20 @@ GasStationComputer::GasStationComputer() {
     CDataPool fuelTankDataPool("FuelTankDataPool", sizeof(FuelTankStatus));
     m_fuelTankStatusPtr = static_cast<FuelTankStatus*>(fuelTankDataPool.LinkDataPool());
 
+    // Set the initial gas prices for the different grades
+    PriceMap map;
+    map.insert(std::make_pair(GasGrade::G87, 1.52));
+    map.insert(std::make_pair(GasGrade::G89, 1.58));
+    map.insert(std::make_pair(GasGrade::G91, 1.82));
+    map.insert(std::make_pair(GasGrade::G92, 2.10));
+    m_fuelTankStatusPtr->m_priceMap = map;  // Do not need semaphore here as we have not yet launch child processes/threads
+                                            // so only this thread/process has access
+
+    // Set the initial quantity of gas for each of the 4 pumps
+    for (int i = 0; i < 4; ++i) {
+        m_fuelTankStatusPtr->m_gasVec.push_back(MAX_FUELTANK_CAPACITY);
+    }
+
     // Create child thread to display Fuel Tank Data Pool data
     m_fuelTankStatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::displayFuelTankStatus, ACTIVE, nullptr));
 
@@ -28,7 +42,6 @@ GasStationComputer::GasStationComputer() {
     // TODO create the producer consumer semaphors
 
     // TODO we need to launch the child process (pump main function)
-
     // TODO we need rendevous in all of our child threads!
 }
 

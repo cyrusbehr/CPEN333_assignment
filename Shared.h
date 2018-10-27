@@ -2,7 +2,9 @@
 #include "IncludeFiles.h"
 #ifndef __Shared__
 #define __Shared__
+
 constexpr int PIPE_SIZE = 1024;
+constexpr int MAX_FUELTANK_CAPACITY = 500;
 
 enum class GasGrade {
     G87,
@@ -11,11 +13,17 @@ enum class GasGrade {
     G92
 };
 
+typedef std::map<GasGrade, float> PriceMap;
+
+struct CustomerPipelineData {
+    GasGrade m_grade = GasGrade::G87;
+    int m_liters = 0;
+    float m_price = 0;
+};
+
 struct FuelTankStatus {
-    float m_fuelTank1 = 0;
-    float m_fuelTank2 = 0;
-    float m_fuelTank3 = 0;
-    float m_fuelTank4 = 0;
+    std::vector<float> m_gasVec;
+    PriceMap m_priceMap;
 };
 
 struct PumpStatus {

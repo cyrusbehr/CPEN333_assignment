@@ -21,8 +21,17 @@ std::string Customer::generateName() {
     return namesVec.at(randNum);
 }
 
-void Customer::pay(int amount) {
+void Customer::pay(float amount) {
     m_money -= amount;
+}
+
+void Customer::setPrices(PriceMap prices) {
+    m_priceMap = prices;
+}
+
+void Customer::swipeCreditCard(CustomerPipelineData& data, const float pricePerLiter) {
+    // Really don't need a function for this, but doing it for the sake of demonstration...
+    data.m_price = data.m_liters * pricePerLiter;
 }
 
 void Customer::purchaseGas() {
@@ -31,7 +40,31 @@ void Customer::purchaseGas() {
     assert(m_pipelineSemaphore);
 
     // Determine how much gas to purchase and which grade
-    int liters = getRandNum(0, MAX_GAS_LITERS);
+    CustomerPipelineData pipelineData;
+    pipelineData.m_liters = getRandNum(0, MAX_GAS_LITERS);
+    pipelineData.m_grade = generateGasGrade();
+
+    // Check that we have enough money, if not, reduce liters until it works out
+    PriceMap::iterator it = m_priceMap.begin();
+    auto pricePerLiter = m_priceMap.find(pipelineData.m_grade)->second;
+    while (pricePerLiter * pipelineData.m_liters > m_money) {
+        pipelineData.m_liters--;
+    }
+
+    // Swipe credit card...
+    swipeCreditCard(pipelineData, pricePerLiter);
+
+    // Remove the gas hose...
+    removeGasHose();
+
+    // Lock the pipeline semaphore
+    m_pipelineSemaphore->Wait(); 
+
+    // Write data into pipeline
+    m_pipelinePtr->Write(&pipelineData, sizeof(pipelineData));
+
+    // Unlock the pipeline semaphore
+    m_pipelineSemaphore->Signal();
 }
 
 GasGrade Customer::generateGasGrade() {

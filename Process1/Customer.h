@@ -15,18 +15,22 @@ public:
     void createPipeline(const std::string pipelineStr);
     void createSemaphore(const std::string semaphoreName);
     void purchaseGas();
+    void setPrices(PriceMap prices);
 
 private:
+    void pay(float amount);
     int generateCCNum();
     int generateGasAmount();
-    void pay(int amount);
+    void swipeCreditCard(CustomerPipelineData& data, const float pricePerLiter);
+    void removeGasHose() {}         // No function body, only used to help demonstrate the process
     std::string generateName();
     GasGrade generateGasGrade();
 
-    std::string m_name;
-    int m_cardNum;
-    int m_money = 1000; // Customers are wealthy! 
     const static int MAX_GAS_LITERS = 100; // Realistically no car can hold more than 100 liters
+    int m_cardNum;
+    float m_money = 1000.f; // Customers are wealthy! 
+    std::string m_name;
+    PriceMap m_priceMap;
 
     std::unique_ptr<CSemaphore> m_pipelineSemaphore = nullptr;
     std::unique_ptr<CPipe> m_pipelinePtr = nullptr;

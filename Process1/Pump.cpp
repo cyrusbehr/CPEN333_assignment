@@ -1,7 +1,8 @@
 #include "Pump.h"
 
-Pump::Pump(const std::string pumpName, const std::string fuelTankDataPoolStr, const std::string pumpStatusDataPoolStr)
+Pump::Pump(const std::string pumpName, const int pumpNum, const std::string fuelTankDataPoolStr, const std::string pumpStatusDataPoolStr)
     :m_pumpName(pumpName)
+    , m_pumpNum(pumpNum)
     , m_fuelTankDataPoolStr(fuelTankDataPoolStr)
     , m_pumpStatusDataPoolStr(pumpStatusDataPoolStr)
 {
@@ -38,7 +39,27 @@ int Pump::main(void) {
 
     // If we have a customer at the pump...
     if (m_currentCustomer) {
+        // Initialize the semaphore and pipeline on the customer end, display the prices to the customer
+        m_currentCustomer->createSemaphore(getSemaphoreName());
+        m_currentCustomer->createPipeline(getPipelineName());
+        m_currentCustomer->setPrices(m_fuelTankStatusPtr->m_priceMap);
 
+        // Trigger the customer to purchase gas
+        m_currentCustomer->purchaseGas();
+
+        // TODO not sure if we actually require a semaphore in the read command, or if it will hand until we read it anyways
+        
+        // Read the information that the customer has sent from the pipeline
+        CustomerPipelineData customerData;
+        m_pipelinePtr->Read(&customerData, sizeof(customerData));
+
+        if (customerData.m_liters > m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1]) {
+            // TODO we need to signal to the gas station computer to refill the tanks
+        }
+
+        // TODO send the transaction information to the gas station computer for them to approve
+
+        // TODO once we receive the gas up signal, then we can charge the customer and update the pump display to show how much we are gassing up
     }
 
     return 0;

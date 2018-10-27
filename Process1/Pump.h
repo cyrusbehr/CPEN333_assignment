@@ -10,7 +10,7 @@
 class Pump 
 : public ActiveClass{
 public:
-    Pump(const std::string pumpName, const std::string fuelTankDataPoolStr, const std::string pumpStatusDataPoolStr);
+    Pump(const std::string pumpName, const int pumpNum, const std::string fuelTankDataPoolStr, const std::string pumpStatusDataPoolStr);
     ~Pump();
 
     int main(void);
@@ -23,7 +23,8 @@ private:
     std::string m_pumpName;
     std::string m_fuelTankDataPoolStr;
     std::string m_pumpStatusDataPoolStr;
-
+    
+    int m_pumpNum = 0;
     FuelTankStatus* m_fuelTankStatusPtr = nullptr;
     PumpStatus* m_pumpStatusPtr = nullptr;
     Customer* m_currentCustomer = nullptr;
