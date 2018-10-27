@@ -11,19 +11,24 @@ class Customer :
 
 public:
     Customer();
-    
-
     int main(void);
-    int generateCCNum();
-    int generateGasAmount();
-    std::string generateName();
     void createPipeline(const std::string pipelineStr);
-   
+    void createSemaphore(const std::string semaphoreName);
+    void purchaseGas();
 
 private:
+    int generateCCNum();
+    int generateGasAmount();
+    void pay(int amount);
+    std::string generateName();
+    GasGrade generateGasGrade();
+
     std::string m_name;
     int m_cardNum;
+    int m_money = 1000; // Customers are wealthy! 
+    const static int MAX_GAS_LITERS = 100; // Realistically no car can hold more than 100 liters
 
+    std::unique_ptr<CSemaphore> m_pipelineSemaphore = nullptr;
     std::unique_ptr<CPipe> m_pipelinePtr = nullptr;
 };
 

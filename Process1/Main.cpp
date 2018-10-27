@@ -26,6 +26,7 @@ int main(void) {
         // Create a new customer and randomly add them to a pump queue
         auto newCustomer = new Customer;
         const auto pumpIdx = getRandNum(0, pumpVec.size() - 1);
+        newCustomer->createSemaphore(pumpVec.at(pumpIdx)->getSemaphoreName());
         pumpVec.at(pumpIdx)->addCustomer(newCustomer);
     }
 

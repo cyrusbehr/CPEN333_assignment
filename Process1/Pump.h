@@ -17,6 +17,7 @@ public:
     void addCustomer(Customer* newCustomer);
 
     std::string getPipelineName();
+    std::string getSemaphoreName();
 
 private:
     std::string m_pumpName;
@@ -25,10 +26,11 @@ private:
 
     FuelTankStatus* m_fuelTankStatusPtr = nullptr;
     PumpStatus* m_pumpStatusPtr = nullptr;
-
-    std::unique_ptr<CPipe> m_pipelinePtr = nullptr;
-    
+    Customer* m_currentCustomer = nullptr;
     std::vector<Customer*> m_customerVec;
+    std::unique_ptr<CPipe> m_pipelinePtr = nullptr;
+    std::unique_ptr<CSemaphore> m_customerSemaphore = nullptr;
+        
 };
 
 
