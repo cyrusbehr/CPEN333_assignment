@@ -11,14 +11,16 @@ class Customer :
 public:
     Customer();
     int main(void);
+    int getCCNumber();
     void createPipeline(const std::string pipelineStr);
     void createSemaphore(const std::string semaphoreName);
     void purchaseGas();
     void setPrices(PriceMap prices);
     void driveAway() {};
+    void charge(float amount);
+    std::string getName();
 
 private:
-    void pay(float amount);
     int generateCCNum();
     int generateGasAmount();
     void swipeCreditCard(CustomerPipelineData& data, const float pricePerLiter);

@@ -34,6 +34,8 @@ private:
     
     CSemaphore m_producerSemaphore;
     CSemaphore m_consumerSemaphore;
+    CSemaphore m_signal;
+    CSemaphore m_fuelTankSemaphore;
 };
 
 

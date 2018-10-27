@@ -15,6 +15,8 @@ const std::string PUMP3_C_STR = "Pump3ConsumerSemaphore";
 const std::string PUMP4_P_STR = "Pump4ProducerSemaphore";
 const std::string PUMP4_C_STR = "Pump4ConsumerSemaphore";
 
+const std::string FUEL_TANK_SEMAPHORE_STR = "FuelTankSemaphore";
+
 enum class GasGrade {
     G87,
     G89,

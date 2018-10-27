@@ -21,12 +21,20 @@ std::string Customer::generateName() {
     return namesVec.at(randNum);
 }
 
-void Customer::pay(float amount) {
+void Customer::charge(float amount) {
     m_money -= amount;
 }
 
 void Customer::setPrices(PriceMap prices) {
     m_priceMap = prices;
+}
+
+std::string Customer::getName() {
+    return m_name;
+}
+
+int Customer::getCCNumber() {
+    return m_cardNum;
 }
 
 void Customer::swipeCreditCard(CustomerPipelineData& data, const float pricePerLiter) {

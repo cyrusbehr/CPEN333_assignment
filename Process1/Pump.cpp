@@ -7,6 +7,8 @@ Pump::Pump(const std::string pumpName, const int pumpNum, const std::string fuel
     , m_pumpStatusDataPoolStr(pumpStatusDataPoolStr)
     , m_producerSemaphore(producerSemaphoreName, 0, 1)
     , m_consumerSemaphore(consumerSemaphoreString, 1, 1)
+    , m_signal(pumpName + "Signal", 0, 1)
+    , m_fuelTankSemaphore(FUEL_TANK_SEMAPHORE_STR, 1, 1)
 {
     // Connect to the fuel tank data pool
     CDataPool fuelTankDataPool(m_fuelTankDataPoolStr, sizeof(FuelTankStatus));
@@ -21,8 +23,6 @@ Pump::Pump(const std::string pumpName, const int pumpNum, const std::string fuel
     
     // Create the mutex to protect the customer pipeline
     m_customerSemaphore = std::make_unique<CSemaphore>(getSemaphoreName(), 1, 1);
-
-    // TODO create the producer consumer cemaphors
 }
 
 Pump::~Pump() {
@@ -44,7 +44,10 @@ int Pump::main(void) {
         // Initialize the semaphore and pipeline on the customer end, display the prices to the customer
         m_currentCustomer->createSemaphore(getSemaphoreName());
         m_currentCustomer->createPipeline(getPipelineName());
+        
+        m_fuelTankSemaphore.Wait();
         m_currentCustomer->setPrices(m_fuelTankStatusPtr->m_priceMap);
+        m_fuelTankSemaphore.Signal();
 
         // Trigger the customer to purchase gas
         m_currentCustomer->purchaseGas();
@@ -55,14 +58,38 @@ int Pump::main(void) {
         CustomerPipelineData customerData;
         m_pipelinePtr->Read(&customerData, sizeof(customerData));
 
-        // Ensure that there is enough gas in the tank
-        if (customerData.m_liters <= m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1]) {
-            
+        // Lock the semaphore before modifying the data
+        m_consumerSemaphore.Wait();
+        m_pumpStatusPtr->m_creditCardNum = m_currentCustomer->getCCNumber();
+        m_pumpStatusPtr->m_customerName = m_currentCustomer->getName();
+        m_pumpStatusPtr->m_grade = customerData.m_grade;
+        m_pumpStatusPtr->m_liters = customerData.m_liters;
+        m_pumpStatusPtr->m_price = customerData.m_price;
+        m_producerSemaphore.Signal();
+
+        // Wait for signal from attendant confirming that we can begin fueling
+        m_signal.Wait();
+
+        // Charge the customer
+        m_currentCustomer->charge(customerData.m_price);
+
+        // Begin the fueling process...
+        float litersFilled = 0;
+        std::cout << "Dispensing fuel..." << std::endl;
+        while (customerData.m_liters - litersFilled > 0) {
+            std::cout << "Liters: " << litersFilled << std::endl;
+                litersFilled += 0.5;
+
+                // Decrement the value in the fuel storage by 0.5
+                m_fuelTankSemaphore.Wait();
+                m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1] -= 0.5;
+                m_fuelTankSemaphore.Signal();
+
+                // Sleep for 1 seconds
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
 
-        // TODO send the transaction information to the gas station computer for them to approve
-
-        // TODO once we receive the gas up signal, then we can charge the customer and update the pump display to show how much we are gassing up
+        std::cout << "Finished!" << std::endl;
 
         // Delete the current customer
         m_currentCustomer->driveAway();

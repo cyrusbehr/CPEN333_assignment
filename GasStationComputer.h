@@ -29,9 +29,10 @@ struct Transaction {
 class GasStationComputer {
 public:
     GasStationComputer();
+    ~GasStationComputer();
 private:
-    int displayFuelTankStatus(void* args);
-    int displayPumpStatus(void* args);
+    int checkFuelTankStatus(void* args);
+    int checkPumpStatus(void* args);
 
     std::vector<Transaction> m_transactions;
 
@@ -44,20 +45,22 @@ private:
 
     // Data pool vars
     FuelTankStatus* m_fuelTankStatusPtr    = nullptr;
-    PumpStatus* m_pump1StatusPtr           = nullptr;
-    PumpStatus* m_pump2StatusPtr           = nullptr;
-    PumpStatus* m_pump3StatusPtr           = nullptr;
-    PumpStatus* m_pump4StatusPtr           = nullptr;
 
-    // Pump Semaphors
-    CSemaphore m_pump1ConsumerLock;
-    CSemaphore m_pump1ProducerLock;
-    CSemaphore m_pump2ConsumerLock;
-    CSemaphore m_pump2ProducerLock;
-    CSemaphore m_pump3ConsumerLock;
-    CSemaphore m_pump3ProducerLock;
-    CSemaphore m_pump4ConsumerLock;
-    CSemaphore m_pump4ProducerLock;
+    struct PumpStatusPtrLock {
+        PumpStatus* m_pumpStatus = nullptr;
+        CSemaphore* m_pumpProducerLock = nullptr;
+        CSemaphore* m_pumpConsumerLock = nullptr;
+        CSemaphore* m_signal = nullptr;
+    };
+
+    // Pump Status Objects
+    PumpStatusPtrLock m_pump1;
+    PumpStatusPtrLock m_pump2;
+    PumpStatusPtrLock m_pump3;
+    PumpStatusPtrLock m_pump4;
+
+    // FuelTank Semaphor
+    CSemaphore m_fuelTankSemaphore;
 };
 
 #endif
