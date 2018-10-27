@@ -48,6 +48,16 @@ private:
     PumpStatus* m_pump2StatusPtr           = nullptr;
     PumpStatus* m_pump3StatusPtr           = nullptr;
     PumpStatus* m_pump4StatusPtr           = nullptr;
+
+    // Pump Semaphors
+    CSemaphore m_pump1ConsumerLock;
+    CSemaphore m_pump1ProducerLock;
+    CSemaphore m_pump2ConsumerLock;
+    CSemaphore m_pump2ProducerLock;
+    CSemaphore m_pump3ConsumerLock;
+    CSemaphore m_pump3ProducerLock;
+    CSemaphore m_pump4ConsumerLock;
+    CSemaphore m_pump4ProducerLock;
 };
 
 #endif

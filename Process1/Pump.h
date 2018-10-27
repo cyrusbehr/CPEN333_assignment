@@ -10,7 +10,7 @@
 class Pump 
 : public ActiveClass{
 public:
-    Pump(const std::string pumpName, const int pumpNum, const std::string fuelTankDataPoolStr, const std::string pumpStatusDataPoolStr);
+    Pump(const std::string pumpName, const int pumpNum, const std::string fuelTankDataPoolStr, const std::string pumpStatusDataPoolStr, const std::string producerSemaphoreName, const std::string consumerSemaphoreString);
     ~Pump();
 
     int main(void);
@@ -31,7 +31,9 @@ private:
     std::vector<Customer*> m_customerVec;
     std::unique_ptr<CPipe> m_pipelinePtr = nullptr;
     std::unique_ptr<CSemaphore> m_customerSemaphore = nullptr;
-        
+    
+    CSemaphore m_producerSemaphore;
+    CSemaphore m_consumerSemaphore;
 };
 
 

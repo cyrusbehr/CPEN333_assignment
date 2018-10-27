@@ -1,10 +1,12 @@
 #include "Pump.h"
 
-Pump::Pump(const std::string pumpName, const int pumpNum, const std::string fuelTankDataPoolStr, const std::string pumpStatusDataPoolStr)
+Pump::Pump(const std::string pumpName, const int pumpNum, const std::string fuelTankDataPoolStr, const std::string pumpStatusDataPoolStr, const std::string producerSemaphoreName, const std::string consumerSemaphoreString)
     :m_pumpName(pumpName)
     , m_pumpNum(pumpNum)
     , m_fuelTankDataPoolStr(fuelTankDataPoolStr)
     , m_pumpStatusDataPoolStr(pumpStatusDataPoolStr)
+    , m_producerSemaphore(producerSemaphoreName, 0, 1)
+    , m_consumerSemaphore(consumerSemaphoreString, 1, 1)
 {
     // Connect to the fuel tank data pool
     CDataPool fuelTankDataPool(m_fuelTankDataPoolStr, sizeof(FuelTankStatus));
@@ -53,13 +55,19 @@ int Pump::main(void) {
         CustomerPipelineData customerData;
         m_pipelinePtr->Read(&customerData, sizeof(customerData));
 
-        if (customerData.m_liters > m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1]) {
-            // TODO we need to signal to the gas station computer to refill the tanks
+        // Ensure that there is enough gas in the tank
+        if (customerData.m_liters <= m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1]) {
+            
         }
 
         // TODO send the transaction information to the gas station computer for them to approve
 
         // TODO once we receive the gas up signal, then we can charge the customer and update the pump display to show how much we are gassing up
+
+        // Delete the current customer
+        m_currentCustomer->driveAway();
+        delete m_currentCustomer;
+        m_currentCustomer = nullptr;
     }
 
     return 0;

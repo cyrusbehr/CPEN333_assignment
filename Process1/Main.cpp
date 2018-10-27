@@ -7,10 +7,10 @@ int main(void) {
     std::vector<std::unique_ptr<Pump>> pumpVec;
 
     // Create 4 pump objects, establish fuel tank and pump data pool connections
-    pumpVec.push_back(std::make_unique<Pump>("Pump1", 1, "FuelTankDataPool", "Pump1DataPool"));
-    pumpVec.push_back(std::make_unique<Pump>("Pump2", 2, "FuelTankDataPool", "Pump2DataPool"));
-    pumpVec.push_back(std::make_unique<Pump>("Pump3", 3, "FuelTankDataPool", "Pump3DataPool"));
-    pumpVec.push_back(std::make_unique<Pump>("Pump4", 4, "FuelTankDataPool", "Pump4DataPool"));
+    pumpVec.push_back(std::make_unique<Pump>("Pump1", 1, "FuelTankDataPool", "Pump1DataPool", PUMP1_P_STR, PUMP1_C_STR));
+    pumpVec.push_back(std::make_unique<Pump>("Pump2", 2, "FuelTankDataPool", "Pump2DataPool", PUMP2_P_STR, PUMP2_C_STR));
+    pumpVec.push_back(std::make_unique<Pump>("Pump3", 3, "FuelTankDataPool", "Pump3DataPool", PUMP3_P_STR, PUMP3_C_STR));
+    pumpVec.push_back(std::make_unique<Pump>("Pump4", 4, "FuelTankDataPool", "Pump4DataPool", PUMP4_P_STR, PUMP4_C_STR));
 
     int sleepTime = 0;
 

@@ -1,6 +1,15 @@
 #include "GasStationComputer.h"
 
-GasStationComputer::GasStationComputer() {
+GasStationComputer::GasStationComputer() 
+    : m_pump1ProducerLock(PUMP1_P_STR, 0, 1)
+    , m_pump1ConsumerLock(PUMP1_C_STR, 1, 1)
+    , m_pump2ProducerLock(PUMP2_P_STR, 0, 1)
+    , m_pump2ConsumerLock(PUMP2_C_STR, 1, 1)
+    , m_pump3ProducerLock(PUMP3_P_STR, 0, 1)
+    , m_pump3ConsumerLock(PUMP3_C_STR, 1, 1)
+    , m_pump4ProducerLock(PUMP4_P_STR, 0, 1)
+    , m_pump4ConsumerLock(PUMP4_C_STR, 1, 1)
+{
     // Create the Fuel Tank data pool
     CDataPool fuelTankDataPool("FuelTankDataPool", sizeof(FuelTankStatus));
     m_fuelTankStatusPtr = static_cast<FuelTankStatus*>(fuelTankDataPool.LinkDataPool());

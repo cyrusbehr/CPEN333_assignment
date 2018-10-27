@@ -1,7 +1,6 @@
 #include "../IncludeFiles.h"
 #include "../Shared.h"
 #include "../../rt.h"
-
 #pragma once
 #ifndef __Customer__
 #define __Customer__
@@ -16,6 +15,7 @@ public:
     void createSemaphore(const std::string semaphoreName);
     void purchaseGas();
     void setPrices(PriceMap prices);
+    void driveAway() {};
 
 private:
     void pay(float amount);
@@ -26,7 +26,7 @@ private:
     std::string generateName();
     GasGrade generateGasGrade();
 
-    const static int MAX_GAS_LITERS = 100; // Realistically no car can hold more than 100 liters
+    const static int MAX_GAS_LITERS = 70; 
     int m_cardNum;
     float m_money = 1000.f; // Customers are wealthy! 
     std::string m_name;

@@ -6,6 +6,15 @@
 constexpr int PIPE_SIZE = 1024;
 constexpr int MAX_FUELTANK_CAPACITY = 500;
 
+const std::string PUMP1_P_STR = "Pump1ProducerSemaphore";
+const std::string PUMP1_C_STR = "Pump1ConsumerSemaphore";
+const std::string PUMP2_P_STR = "Pump22ProducerSemaphore";
+const std::string PUMP2_C_STR = "Pump22ConsumerSemaphore";
+const std::string PUMP3_P_STR = "Pump3ProducerSemaphore";
+const std::string PUMP3_C_STR = "Pump3ConsumerSemaphore";
+const std::string PUMP4_P_STR = "Pump4ProducerSemaphore";
+const std::string PUMP4_C_STR = "Pump4ConsumerSemaphore";
+
 enum class GasGrade {
     G87,
     G89,
@@ -38,7 +47,5 @@ struct PumpStatus {
 inline int getRandNum(int min, int max) {
     return rand() % (max - min + 1) + min;
 }
-
-
 
 #endif
