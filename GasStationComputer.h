@@ -6,24 +6,16 @@
 #ifndef __GasStationComputer__
 #define __GasStationComputer__
 
-// Process
-// Store a data structure which can be displayed
-// Record of transactions
-// Customers purchasing gas
-// 5 child threads
-// 4 to handle communication with each of the pumps (via datapools and semaphors)
-// One to check status of fuel in each of the 4 fuel tanks
-// Each thread can write to the output window
-
 struct Transaction {
     float m_price = 0;
     float m_liters = 0;
+    GasGrade m_grade;
+    int m_cardNum;
     std::string m_customerName = "";
-    Transaction(float price, float liters, std::string name)
-        : m_price(price)
-        , m_liters(liters)
-        , m_customerName(name)
-    {}
+    std::chrono::system_clock::time_point m_currentTime;
+    Transaction() {
+        m_currentTime = std::chrono::system_clock::now();
+    }
 };
 
 class GasStationComputer {
@@ -59,8 +51,10 @@ private:
     PumpStatusPtrLock m_pump3;
     PumpStatusPtrLock m_pump4;
 
-    // FuelTank Semaphor
+    // FuelTank Semaphore
     CSemaphore m_fuelTankSemaphore;
+
+    std::vector<Transaction> m_transactionVec;
 };
 
 #endif

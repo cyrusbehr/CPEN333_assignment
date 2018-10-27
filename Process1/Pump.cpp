@@ -46,7 +46,7 @@ int Pump::main(void) {
         m_currentCustomer->createPipeline(getPipelineName());
         
         m_fuelTankSemaphore.Wait();
-        m_currentCustomer->setPrices(m_fuelTankStatusPtr->m_priceMap);
+        m_currentCustomer->setPrices(m_fuelTankStatusPtr->m_prices);
         m_fuelTankSemaphore.Signal();
 
         // Trigger the customer to purchase gas

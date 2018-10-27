@@ -15,7 +15,7 @@ public:
     void createPipeline(const std::string pipelineStr);
     void createSemaphore(const std::string semaphoreName);
     void purchaseGas();
-    void setPrices(PriceMap prices);
+    void setPrices(GasPrice prices);
     void driveAway() {};
     void charge(float amount);
     std::string getName();
@@ -32,7 +32,7 @@ private:
     int m_cardNum;
     float m_money = 1000.f; // Customers are wealthy! 
     std::string m_name;
-    PriceMap m_priceMap;
+    GasPrice m_prices;
 
     std::unique_ptr<CSemaphore> m_pipelineSemaphore = nullptr;
     std::unique_ptr<CPipe> m_pipelinePtr = nullptr;

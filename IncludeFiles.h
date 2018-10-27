@@ -8,5 +8,6 @@
 #include <thread>
 #include <assert.h>
 #include <map>
+#include <chrono>
 #endif // !__IncludeFiles__
 

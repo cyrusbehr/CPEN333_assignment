@@ -24,17 +24,22 @@ enum class GasGrade {
     G92
 };
 
-typedef std::map<GasGrade, float> PriceMap;
+struct GasPrice {
+    float m_g87Price = 1.52f;
+    float m_g89Price = 1.58f;
+    float m_g91Price = 1.72f;
+    float m_g92Price = 1.97f;
+};
 
 struct CustomerPipelineData {
     GasGrade m_grade = GasGrade::G87;
-    int m_liters = 0;
+    float m_liters = 0;
     float m_price = 0;
 };
 
 struct FuelTankStatus {
     std::vector<float> m_gasVec;
-    PriceMap m_priceMap;
+    GasPrice m_prices;
 };
 
 struct PumpStatus {

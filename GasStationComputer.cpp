@@ -7,15 +7,6 @@ GasStationComputer::GasStationComputer()
     CDataPool fuelTankDataPool("FuelTankDataPool", sizeof(FuelTankStatus));
     m_fuelTankStatusPtr = static_cast<FuelTankStatus*>(fuelTankDataPool.LinkDataPool());
 
-    // Set the initial gas prices for the different grades
-    PriceMap map;
-    map.insert(std::make_pair(GasGrade::G87, 1.52));
-    map.insert(std::make_pair(GasGrade::G89, 1.58));
-    map.insert(std::make_pair(GasGrade::G91, 1.82));
-    map.insert(std::make_pair(GasGrade::G92, 2.10));
-    m_fuelTankStatusPtr->m_priceMap = map;  // Do not need semaphore here as we have not yet launch child processes/threads
-                                            // so only this thread/process has access
-
     // Set the initial quantity of gas for each of the 4 pumps
     for (int i = 0; i < 4; ++i) {
         m_fuelTankStatusPtr->m_gasVec.push_back(MAX_FUELTANK_CAPACITY);
@@ -92,13 +83,21 @@ int GasStationComputer::checkPumpStatus(void* args) {
     PumpStatusPtrLock* status = static_cast<PumpStatusPtrLock*>(args);
     auto& pStat = status->m_pumpStatus;
 
+    Transaction newTransaction;
+
     status->m_pumpProducerLock->Wait();
+    newTransaction.m_cardNum = pStat->m_creditCardNum;
+    newTransaction.m_customerName = pStat->m_customerName;
+    newTransaction.m_grade = pStat->m_grade;
+    newTransaction.m_liters = pStat->m_liters;
+    newTransaction.m_price = pStat->m_price;
+    m_transactionVec.push_back(newTransaction);
+
     std::cout << "New Customer:" << std::endl;
     std::cout << pStat->m_customerName << std::endl;
     std::cout << pStat->m_liters << " Liters for " << pStat->m_price << std::endl;
     status->m_pumpConsumerLock->Signal();
 
-    // TODO add this to some sort of vector which can be used to track the total amount of gas purchased
     return 0;
 }
 // TODO have a function whose only job is to read the input of the keyboard. if the user specifies the fill command, it sets a bool. This then sends a messaage back to the pump class which checks if there is a customer there. If so, then it fills the tanks. It should be within the listing function in the pump where we check if there is enough gas in the tank, deduct the price from the customer, and finally delete the customer

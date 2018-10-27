@@ -25,8 +25,8 @@ void Customer::charge(float amount) {
     m_money -= amount;
 }
 
-void Customer::setPrices(PriceMap prices) {
-    m_priceMap = prices;
+void Customer::setPrices(GasPrice prices) {
+    m_prices = prices;
 }
 
 std::string Customer::getName() {
@@ -53,8 +53,24 @@ void Customer::purchaseGas() {
     pipelineData.m_grade = generateGasGrade();
 
     // Check that we have enough money, if not, reduce liters until it works out
-    PriceMap::iterator it = m_priceMap.begin();
-    auto pricePerLiter = m_priceMap.find(pipelineData.m_grade)->second;
+    float pricePerLiter;
+    switch (pipelineData.m_grade)
+    {
+    case GasGrade::G87:
+        pricePerLiter = m_prices.m_g87Price;
+        break;
+    case GasGrade::G89:
+        pricePerLiter = m_prices.m_g89Price;
+        break;
+    case GasGrade::G91:
+        pricePerLiter = m_prices.m_g91Price;
+        break;
+    case GasGrade::G92:
+        pricePerLiter = m_prices.m_g92Price;
+        break;
+    default:
+        break;
+    }
     while (pricePerLiter * pipelineData.m_liters > m_money) {
         pipelineData.m_liters--;
     }
@@ -108,3 +124,5 @@ void Customer::createSemaphore(const std::string semaphoreName) {
 int Customer::generateGasAmount() {
     return rand() % (71);
 }
+
+// TODO need to make customer pipelines typesafe!!
