@@ -49,7 +49,7 @@ void Customer::purchaseGas() {
 
     // Determine how much gas to purchase and which grade
     CustomerPipelineData pipelineData;
-    pipelineData.m_liters = getRandNum(0, MAX_GAS_LITERS);
+    pipelineData.m_liters = static_cast<float>(getRandNum(0, MAX_GAS_LITERS));
     pipelineData.m_grade = generateGasGrade();
 
     // Check that we have enough money, if not, reduce liters until it works out
@@ -89,6 +89,10 @@ void Customer::purchaseGas() {
 
     // Unlock the pipeline semaphore
     m_pipelineSemaphore->Signal();
+}
+
+void Customer::dispenseGas(float amount) {
+    m_liters += amount;
 }
 
 GasGrade Customer::generateGasGrade() {

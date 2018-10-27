@@ -15,6 +15,7 @@ public:
     void createPipeline(const std::string pipelineStr);
     void createSemaphore(const std::string semaphoreName);
     void purchaseGas();
+    void dispenseGas(float amount);
     void setPrices(GasPrice prices);
     void driveAway() {};
     void charge(float amount);
@@ -30,6 +31,7 @@ private:
 
     const static int MAX_GAS_LITERS = 70; 
     int m_cardNum;
+    float m_liters;
     float m_money = 1000.f; // Customers are wealthy! 
     std::string m_name;
     GasPrice m_prices;

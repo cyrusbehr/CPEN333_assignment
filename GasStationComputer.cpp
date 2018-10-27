@@ -1,5 +1,10 @@
 #include "GasStationComputer.h"
 
+Transaction::Transaction() {
+    // Sets the timestamp when the transaction object is initialized
+    m_currentTime = std::chrono::system_clock::now();
+}
+
 GasStationComputer::GasStationComputer()
     :m_fuelTankSemaphore(FUEL_TANK_SEMAPHORE_STR, 1, 1)
 {
@@ -75,6 +80,7 @@ GasStationComputer::~GasStationComputer() {
 }
 
 int GasStationComputer::checkFuelTankStatus(void* args) {
+    // Thread Function
     while (true) {
         // If any of the gas tanks have less than 200 liters, they should flash red
         m_fuelTankSemaphore.Wait();
@@ -113,12 +119,13 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
 }
 
 int GasStationComputer::checkPumpStatus(void* args) {
+    // Thread Function
     PumpStatusPtrLock* status = static_cast<PumpStatusPtrLock*>(args);
     auto& pStat = status->m_pumpStatus;
     while (true) {
         Transaction newTransaction;
-
         status->m_pumpProducerLock->Wait();
+        // Get new transaction information and add it to a record of all transactions
         newTransaction.m_cardNum = pStat->m_creditCardNum;
         newTransaction.m_customerName = pStat->m_customerName;
         newTransaction.m_grade = pStat->m_grade;

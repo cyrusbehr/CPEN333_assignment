@@ -13,9 +13,7 @@ struct Transaction {
     int m_cardNum;
     std::string m_customerName = "";
     std::chrono::system_clock::time_point m_currentTime;
-    Transaction() {
-        m_currentTime = std::chrono::system_clock::now();
-    }
+    Transaction();
 };
 
 class GasStationComputer {

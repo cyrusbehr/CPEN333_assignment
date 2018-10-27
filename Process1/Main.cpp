@@ -19,8 +19,6 @@ int main(void) {
 
         // Wait 1 to 10 seconds before creating a new customer
         sleepTime = getRandNum(1, 10);
-        
-        sleepTime = 1;
         std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
         
         // Create a new customer and randomly add them to a pump queue
