@@ -75,29 +75,62 @@ GasStationComputer::~GasStationComputer() {
 }
 
 int GasStationComputer::checkFuelTankStatus(void* args) {
-    // TODO: Periodically print out the pump status
+    while (true) {
+        // If any of the gas tanks have less than 200 liters, they should flash red
+        m_fuelTankSemaphore.Wait();
+        if (m_fuelTankStatusPtr->m_gasVec[0] <= 200) {
+            std::cout << "Gas tank 1: " << m_fuelTankStatusPtr->m_gasVec[0] << std::endl;
+        }
+        else {
+            // Flash RED
+        }
+
+        if (m_fuelTankStatusPtr->m_gasVec[1] <= 200) {
+            // Flash RED
+        }
+        else {
+            std::cout << "Gas tank 2: " << m_fuelTankStatusPtr->m_gasVec[1] << std::endl;
+        }
+
+        if (m_fuelTankStatusPtr->m_gasVec[2] <= 200) {
+            // Flash RED
+        }
+        else {
+            std::cout << "Gas tank 3: " << m_fuelTankStatusPtr->m_gasVec[2] << std::endl;
+        }
+
+        if (m_fuelTankStatusPtr->m_gasVec[3] <= 200) {
+            // FLash RED
+        }
+        else {
+            std::cout << "Gas tank 4: " << m_fuelTankStatusPtr->m_gasVec[3] << std::endl;
+        }
+
+        m_fuelTankSemaphore.Signal();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
     return 0;
 }
 
 int GasStationComputer::checkPumpStatus(void* args) {
     PumpStatusPtrLock* status = static_cast<PumpStatusPtrLock*>(args);
     auto& pStat = status->m_pumpStatus;
+    while (true) {
+        Transaction newTransaction;
 
-    Transaction newTransaction;
+        status->m_pumpProducerLock->Wait();
+        newTransaction.m_cardNum = pStat->m_creditCardNum;
+        newTransaction.m_customerName = pStat->m_customerName;
+        newTransaction.m_grade = pStat->m_grade;
+        newTransaction.m_liters = pStat->m_liters;
+        newTransaction.m_price = pStat->m_price;
+        m_transactionVec.push_back(newTransaction);
 
-    status->m_pumpProducerLock->Wait();
-    newTransaction.m_cardNum = pStat->m_creditCardNum;
-    newTransaction.m_customerName = pStat->m_customerName;
-    newTransaction.m_grade = pStat->m_grade;
-    newTransaction.m_liters = pStat->m_liters;
-    newTransaction.m_price = pStat->m_price;
-    m_transactionVec.push_back(newTransaction);
-
-    std::cout << "New Customer:" << std::endl;
-    std::cout << pStat->m_customerName << std::endl;
-    std::cout << pStat->m_liters << " Liters for " << pStat->m_price << std::endl;
-    status->m_pumpConsumerLock->Signal();
-
+        std::cout << "New Customer:" << std::endl;
+        std::cout << pStat->m_customerName << std::endl;
+        std::cout << pStat->m_liters << " Liters for " << pStat->m_price << std::endl;
+        status->m_pumpConsumerLock->Signal();
+    }
     return 0;
 }
 // TODO have a function whose only job is to read the input of the keyboard. if the user specifies the fill command, it sets a bool. This then sends a messaage back to the pump class which checks if there is a customer there. If so, then it fills the tanks. It should be within the listing function in the pump where we check if there is enough gas in the tank, deduct the price from the customer, and finally delete the customer
