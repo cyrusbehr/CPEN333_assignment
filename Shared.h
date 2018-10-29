@@ -25,10 +25,10 @@ enum class GasGrade {
 };
 
 struct GasPrice {
-    float m_g87Price = 1.52f;
-    float m_g89Price = 1.58f;
-    float m_g91Price = 1.72f;
-    float m_g92Price = 1.97f;
+    float m_g87Price = 0.f;
+    float m_g89Price = 0.f;
+    float m_g91Price = 0.f;
+    float m_g92Price = 0.f;
 };
 
 struct CustomerPipelineData {
@@ -49,6 +49,8 @@ struct PumpStatus {
     float m_price = 0.f;
     GasGrade m_grade = GasGrade::G87;
 };
+
+
 
 // Return random number generated between min and max, inclusive 
 inline int getRandNum(int min, int max) {

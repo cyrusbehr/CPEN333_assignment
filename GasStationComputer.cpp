@@ -5,10 +5,13 @@ Transaction::Transaction() {
     m_currentTime = std::chrono::system_clock::now();
 }
 
-GasStationComputer::GasStationComputer()
-    :m_fuelTankSemaphore(FUEL_TANK_SEMAPHORE_STR, 1, 1)
-{
-    // Create the Fuel Tank data pool
+int GasStationComputer::main(void) {
+    // Create 4 gas pump Data pools
+    CDataPool pump1DataPool("Pump1DataPool", sizeof(PumpStatus));
+    CDataPool pump2DataPool("Pump2DataPool", sizeof(PumpStatus));
+    CDataPool pump3DataPool("Pump3DataPool", sizeof(PumpStatus));
+    CDataPool pump4DataPool("Pump4DataPool", sizeof(PumpStatus));
+
     CDataPool fuelTankDataPool("FuelTankDataPool", sizeof(FuelTankStatus));
     m_fuelTankStatusPtr = static_cast<FuelTankStatus*>(fuelTankDataPool.LinkDataPool());
 
@@ -17,20 +20,17 @@ GasStationComputer::GasStationComputer()
         m_fuelTankStatusPtr->m_gasVec.push_back(MAX_FUELTANK_CAPACITY);
     }
 
-    // Create child thread to display Fuel Tank Data Pool data
-    m_fuelTankStatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::checkFuelTankStatus, ACTIVE, nullptr));
-
-    // Create 4 gas pump Data pools
-    CDataPool pump1DataPool("Pump1DataPool", sizeof(PumpStatus));
-    CDataPool pump2DataPool("Pump2DataPool", sizeof(PumpStatus));
-    CDataPool pump3DataPool("Pump3DataPool", sizeof(PumpStatus));
-    CDataPool pump4DataPool("Pump4DataPool", sizeof(PumpStatus));
+    // Set the initial gas prices
+    m_fuelTankStatusPtr->m_prices.m_g87Price = 1.52f;
+    m_fuelTankStatusPtr->m_prices.m_g89Price = 1.58f;
+    m_fuelTankStatusPtr->m_prices.m_g91Price = 1.72f;
+    m_fuelTankStatusPtr->m_prices.m_g92Price = 1.97f;
 
     m_pump1.m_pumpStatus = static_cast<PumpStatus*>(pump1DataPool.LinkDataPool());
     m_pump2.m_pumpStatus = static_cast<PumpStatus*>(pump2DataPool.LinkDataPool());
     m_pump3.m_pumpStatus = static_cast<PumpStatus*>(pump3DataPool.LinkDataPool());
     m_pump4.m_pumpStatus = static_cast<PumpStatus*>(pump4DataPool.LinkDataPool());
-    
+
     // Create Producer Consumer Semaphores
     m_pump1.m_pumpProducerLock = new CSemaphore(PUMP1_P_STR, 0, 1);
     m_pump1.m_pumpConsumerLock = new CSemaphore(PUMP1_C_STR, 1, 1);
@@ -45,16 +45,34 @@ GasStationComputer::GasStationComputer()
     m_pump3.m_signal = new CSemaphore("Pump3Signal", 0, 1);
     m_pump4.m_signal = new CSemaphore("Pump4Signal", 0, 1);
 
-    // Create 4 child threads to read from Gas Pump Data Pool
-    m_pump1StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump1));
-    m_pump2StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump2));
-    m_pump3StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump3));
-    m_pump4StatusThreadPtr = std::make_unique<ClassThread<GasStationComputer>>(ClassThread<GasStationComputer>(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump4));
+    // Create child thread to display Fuel Tank Data Pool data
+    ClassThread<GasStationComputer> fuelTankStatusThread(this, &GasStationComputer::checkFuelTankStatus, ACTIVE, nullptr);
+    ClassThread<GasStationComputer> pump1StatusThread(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump1);
+    ClassThread<GasStationComputer> pump2StatusThread(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump2);
+    ClassThread<GasStationComputer> pump3StatusThread(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump3);
+    ClassThread<GasStationComputer> pump4StatusThread(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump4);
 
+    // Launch the child process
+    CProcess p1("C:\\Users\\cyrus\\source\\repos\\Mech4\\CPEN_333\\Assignment1\\Debug\\Process1.exe",
+        NORMAL_PRIORITY_CLASS,
+        OWN_WINDOW,
+        ACTIVE
+    );
 
-    // TODO we need to launch the child process (pump main function)
     // TODO we need rendevous in all of our child threads!
+
+    fuelTankStatusThread.WaitForThread();
+    pump1StatusThread.WaitForThread();
+    pump2StatusThread.WaitForThread();
+    pump3StatusThread.WaitForThread();
+    pump4StatusThread.WaitForThread();
+
+    return 0;
 }
+
+GasStationComputer::GasStationComputer()
+    :m_fuelTankSemaphore(FUEL_TANK_SEMAPHORE_STR, 1, 1)
+{}
 
 GasStationComputer::~GasStationComputer() {
     delete m_pump1.m_pumpStatus;
@@ -81,6 +99,9 @@ GasStationComputer::~GasStationComputer() {
 
 int GasStationComputer::checkFuelTankStatus(void* args) {
     // Thread Function
+    if (true) return 0; // TODO remove this line
+    // Create the Fuel Tank data pool
+    std::cout << "Check Fuel Tank Status thread function" << std::endl;
     while (true) {
         // If any of the gas tanks have less than 200 liters, they should flash red
         m_fuelTankSemaphore.Wait();
@@ -118,20 +139,27 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
     return 0;
 }
 
+// TODO try removing the producer consumer semaphors and see if it works any better
+// The data pools are not getting connected for some reason...
+// We should hardcode the names until we figure out what is going on
+// Figure our why randomization is not working either!!
+
 int GasStationComputer::checkPumpStatus(void* args) {
     // Thread Function
-    PumpStatusPtrLock* status = static_cast<PumpStatusPtrLock*>(args);
+    PumpStatusPtrLock* status = reinterpret_cast<PumpStatusPtrLock*>(args);
     auto& pStat = status->m_pumpStatus;
     while (true) {
         Transaction newTransaction;
+        std::cout << "Waiting on pumpProducerLock" << std::endl;
         status->m_pumpProducerLock->Wait();
+        std::cout << "Pump Producer lock triggered" << std::endl;
         // Get new transaction information and add it to a record of all transactions
         newTransaction.m_cardNum = pStat->m_creditCardNum;
         newTransaction.m_customerName = pStat->m_customerName;
         newTransaction.m_grade = pStat->m_grade;
         newTransaction.m_liters = pStat->m_liters;
         newTransaction.m_price = pStat->m_price;
-        m_transactionVec.push_back(newTransaction);
+        status->m_transactionVec.push_back(newTransaction);
 
         std::cout << "New Customer:" << std::endl;
         std::cout << pStat->m_customerName << std::endl;

@@ -10,19 +10,8 @@ Pump::Pump(const std::string pumpName, const int pumpNum, const std::string fuel
     , m_signal(pumpName + "Signal", 0, 1)
     , m_fuelTankSemaphore(FUEL_TANK_SEMAPHORE_STR, 1, 1)
 {
-    // Connect to the fuel tank data pool
-    CDataPool fuelTankDataPool(m_fuelTankDataPoolStr, sizeof(FuelTankStatus));
-    m_fuelTankStatusPtr = static_cast<FuelTankStatus*>(fuelTankDataPool.LinkDataPool());
-
-    // Connect to pump status data pool
-    CDataPool pumpDataPool(m_pumpStatusDataPoolStr, sizeof(PumpStatus));
-    m_pumpStatusPtr = static_cast<PumpStatus*>(pumpDataPool.LinkDataPool());
-
-    // Create the pump pipeline for communication with customers
-    m_pipelinePtr = std::make_unique<CPipe>(getPipelineName(), PIPE_SIZE);
-    
-    // Create the mutex to protect the customer pipeline
-    m_customerSemaphore = std::make_unique<CSemaphore>(getSemaphoreName(), 1, 1);
+    // Seed the random function generator
+    srand(static_cast<unsigned int>(time(NULL)));
 }
 
 Pump::~Pump() {
@@ -33,6 +22,20 @@ Pump::~Pump() {
 }
 
 int Pump::main(void) {
+    // Connect to the fuel tank data pool
+    CDataPool fuelTankDataPool(m_fuelTankDataPoolStr, sizeof(FuelTankStatus));
+    m_fuelTankStatusPtr = static_cast<FuelTankStatus*>(fuelTankDataPool.LinkDataPool());
+
+    // Connect to pump status data pool
+    CDataPool pumpDataPool(m_pumpStatusDataPoolStr, sizeof(PumpStatus));
+    m_pumpStatusPtr = static_cast<PumpStatus*>(pumpDataPool.LinkDataPool());
+
+    // Create the pump pipeline for communication with customers
+    m_pipelinePtr = std::make_unique<CPipe>(getPipelineName(), PIPE_SIZE);
+
+    // Create the mutex to protect the customer pipeline
+    m_customerSemaphore = std::make_unique<CSemaphore>(getSemaphoreName(), 1, 1);
+
     while (true) {
         // Check if we have a customer in the queue, if so, make them the current customer and remove them from the outstanding queue
         if (m_customerVec.size()) {
@@ -42,6 +45,7 @@ int Pump::main(void) {
 
         // If we have a customer at the pump...
         if (m_currentCustomer) {
+            std::cout << "Pump " << m_pumpNum << " has a customer" << std::endl;
             // Initialize the semaphore and pipeline on the customer end, display the prices to the customer
             m_currentCustomer->createSemaphore(getSemaphoreName());
             m_currentCustomer->createPipeline(getPipelineName());
@@ -51,15 +55,20 @@ int Pump::main(void) {
             m_currentCustomer->setPrices(m_fuelTankStatusPtr->m_prices);
             m_fuelTankSemaphore.Signal();
 
+            std::cout << "Pump " << m_pumpNum << " has signalled for customer to purchase gas" << std::endl;
             // Trigger the customer to purchase gas
             m_currentCustomer->purchaseGas();
 
             // TODO not sure if we actually require a semaphore in the read command, or if it will hand until we read it anyways
 
+            std::cout << "Pump " << m_pumpNum << " is about to read from pipeline" << std::endl;
             // Read the information that the customer has sent from the pipeline
             CustomerPipelineData customerData;
             m_pipelinePtr->Read(&customerData, sizeof(customerData));
 
+            std::cout << "Pump " << m_pumpNum << " is about to update pump status" << std::endl;
+            std::cout << "Customer: " << m_currentCustomer->getName() << std::endl;
+            std::cout << "Liters " << customerData.m_liters << " for: " << customerData.m_price << std::endl;
             // Lock the semaphore before modifying the data
             m_consumerSemaphore.Wait();
             m_pumpStatusPtr->m_creditCardNum = m_currentCustomer->getCCNumber();
@@ -69,6 +78,7 @@ int Pump::main(void) {
             m_pumpStatusPtr->m_price = customerData.m_price;
             // Signal the producer semaphore
             m_producerSemaphore.Signal();
+            std::cout << "Pump " << m_pumpNum << " has updated pump status" << std::endl;
 
             // Wait for signal from attendant confirming that we can begin fueling
             m_signal.Wait();
@@ -116,3 +126,5 @@ void Pump::addCustomer(Customer* newCustomer) {
 std::string Pump::getSemaphoreName() {
     return m_pumpName + "Semaphore";
 }
+
+// TODO figure out why randomization is not working!! I think it may be the fact that we have done inline!!

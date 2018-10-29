@@ -3,7 +3,7 @@
 #include "Customer.h"
 
 int main(void) {
-
+    srand(time(NULL));
     std::vector<std::unique_ptr<Pump>> pumpVec;
 
     // Create 4 pump objects, establish fuel tank and pump data pool connections
@@ -12,19 +12,22 @@ int main(void) {
     pumpVec.push_back(std::make_unique<Pump>("Pump3", 3, "FuelTankDataPool", "Pump3DataPool", PUMP3_P_STR, PUMP3_C_STR));
     pumpVec.push_back(std::make_unique<Pump>("Pump4", 4, "FuelTankDataPool", "Pump4DataPool", PUMP4_P_STR, PUMP4_C_STR));
 
+    for (auto& pump : pumpVec) {
+        pump->Resume();
+    }
+
     int sleepTime = 0;
 
     // Main loop which periodically creates 
     while (true) {
-
-        // Wait 1 to 10 seconds before creating a new customer
-        sleepTime = getRandNum(1, 10);
-        std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
-        
         // Create a new customer and randomly add them to a pump queue
         auto newCustomer = new Customer;
-        const auto pumpIdx = getRandNum(0, pumpVec.size() - 1);
+        const auto pumpIdx = rand() % (pumpVec.size());
         pumpVec.at(pumpIdx)->addCustomer(newCustomer);
+
+        // Wait 1 to 10 seconds before creating the next customer
+        sleepTime = rand() % (10 - 1 + 1) + 1;
+        std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
     }
 
     return 0;

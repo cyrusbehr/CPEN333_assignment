@@ -16,22 +16,18 @@ struct Transaction {
     Transaction();
 };
 
-class GasStationComputer {
+class GasStationComputer 
+    : public ActiveClass
+{
 public:
     GasStationComputer();
     ~GasStationComputer();
+    int main(void);
 private:
     int checkFuelTankStatus(void* args);
     int checkPumpStatus(void* args);
 
     std::vector<Transaction> m_transactions;
-
-    // Threads
-    std::unique_ptr<ClassThread<GasStationComputer>> m_fuelTankStatusThreadPtr = nullptr;
-    std::unique_ptr<ClassThread<GasStationComputer>> m_pump1StatusThreadPtr = nullptr;
-    std::unique_ptr<ClassThread<GasStationComputer>> m_pump2StatusThreadPtr = nullptr;
-    std::unique_ptr<ClassThread<GasStationComputer>> m_pump3StatusThreadPtr = nullptr;
-    std::unique_ptr<ClassThread<GasStationComputer>> m_pump4StatusThreadPtr = nullptr;
 
     // Data pool vars
     FuelTankStatus* m_fuelTankStatusPtr    = nullptr;
@@ -41,6 +37,7 @@ private:
         CSemaphore* m_pumpProducerLock = nullptr;
         CSemaphore* m_pumpConsumerLock = nullptr;
         CSemaphore* m_signal = nullptr;
+        std::vector<Transaction> m_transactionVec;
     };
 
     // Pump Status Objects
@@ -52,7 +49,6 @@ private:
     // FuelTank Semaphore
     CSemaphore m_fuelTankSemaphore;
 
-    std::vector<Transaction> m_transactionVec;
 };
 
 #endif

@@ -4,6 +4,8 @@ Customer::Customer()
 {
     m_name = generateName();
     m_cardNum = generateCCNum();
+    std::cout << "Created new customer: " << m_name << std::endl;
+    
 }
 
 int Customer::main(void) {
@@ -43,13 +45,14 @@ void Customer::swipeCreditCard(CustomerPipelineData& data, const float pricePerL
 }
 
 void Customer::purchaseGas() {
+    srand(time(NULL));
     // Ensure that the pipelinePtr and the pipelineSemaphore are not nullptr
     assert(m_pipelinePtr);
     assert(m_pipelineSemaphore);
 
     // Determine how much gas to purchase and which grade
     CustomerPipelineData pipelineData;
-    pipelineData.m_liters = static_cast<float>(getRandNum(0, MAX_GAS_LITERS));
+    pipelineData.m_liters = static_cast<float>(rand() % (MAX_GAS_LITERS + 1));
     pipelineData.m_grade = generateGasGrade();
 
     // Check that we have enough money, if not, reduce liters until it works out
@@ -81,14 +84,17 @@ void Customer::purchaseGas() {
     // Remove the gas hose...
     removeGasHose();
 
+    std::cout << m_name << " waiting for pipeline..." << std::endl;
     // Lock the pipeline semaphore
     m_pipelineSemaphore->Wait(); 
 
+    std::cout << m_name << " about to write into pipeline" << std::endl;
     // Write data into pipeline
     m_pipelinePtr->Write(&pipelineData, sizeof(pipelineData));
 
     // Unlock the pipeline semaphore
     m_pipelineSemaphore->Signal();
+    std::cout << m_name << " unlocked pipeline" << std::endl;
 }
 
 void Customer::dispenseGas(float amount) {
@@ -97,7 +103,7 @@ void Customer::dispenseGas(float amount) {
 
 GasGrade Customer::generateGasGrade() {
     // We will make it 4 times as likely that they will get the cheapest grade
-    int gradeNum = getRandNum(0, 6);
+    int gradeNum = rand() % (7);
     if (gradeNum <= 3) {
         return GasGrade::G87;
     }
