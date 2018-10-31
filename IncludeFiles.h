@@ -10,5 +10,9 @@
 #include <map>
 #include <chrono>
 #include <ctime>
+#include <mutex>
+#include <windows.h>
+#include <sstream>
+#include <iomanip>
 #endif // !__IncludeFiles__
 

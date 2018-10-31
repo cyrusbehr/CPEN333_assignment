@@ -32,6 +32,8 @@ struct GasPrice {
 };
 
 struct CustomerPipelineData {
+    std::string m_name = "";
+    int m_ccNum = 0;
     GasGrade m_grade = GasGrade::G87;
     float m_liters = 0;
     float m_price = 0;

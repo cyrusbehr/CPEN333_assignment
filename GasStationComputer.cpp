@@ -139,11 +139,6 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
     return 0;
 }
 
-// TODO try removing the producer consumer semaphors and see if it works any better
-// The data pools are not getting connected for some reason...
-// We should hardcode the names until we figure out what is going on
-// Figure our why randomization is not working either!!
-
 int GasStationComputer::checkPumpStatus(void* args) {
     // Thread Function
     PumpStatusPtrLock* status = reinterpret_cast<PumpStatusPtrLock*>(args);

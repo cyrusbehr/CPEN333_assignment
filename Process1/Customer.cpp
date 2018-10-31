@@ -4,8 +4,7 @@ Customer::Customer()
 {
     m_name = generateName();
     m_cardNum = generateCCNum();
-    std::cout << "Created new customer: " << m_name << std::endl;
-    
+    //std::cout << "Created new customer: " << m_name << std::endl;
 }
 
 int Customer::main(void) {
@@ -14,7 +13,7 @@ int Customer::main(void) {
 
 void Customer::createPipeline(const std::string pipelineName) {
     // Connect to the pump pipeline
-    m_pipelinePtr = std::make_unique<CPipe>(pipelineName, PIPE_SIZE);
+    m_pipelinePtr = std::make_unique<CTypedPipe<CustomerPipelineData>>(pipelineName, PIPE_SIZE);
 }
 
 std::string Customer::generateName() {
@@ -54,6 +53,8 @@ void Customer::purchaseGas() {
     CustomerPipelineData pipelineData;
     pipelineData.m_liters = static_cast<float>(rand() % (MAX_GAS_LITERS + 1));
     pipelineData.m_grade = generateGasGrade();
+    pipelineData.m_name = getName();
+    pipelineData.m_ccNum = getCCNumber();
 
     // Check that we have enough money, if not, reduce liters until it works out
     float pricePerLiter;
@@ -84,17 +85,17 @@ void Customer::purchaseGas() {
     // Remove the gas hose...
     removeGasHose();
 
-    std::cout << m_name << " waiting for pipeline..." << std::endl;
+    //std::cout << m_name << " waiting for pipeline..." << std::endl;
     // Lock the pipeline semaphore
     m_pipelineSemaphore->Wait(); 
 
-    std::cout << m_name << " about to write into pipeline" << std::endl;
+    //std::cout << m_name << " about to write into pipeline" << std::endl;
     // Write data into pipeline
-    m_pipelinePtr->Write(&pipelineData, sizeof(pipelineData));
+    m_pipelinePtr->Write(&pipelineData);
 
     // Unlock the pipeline semaphore
     m_pipelineSemaphore->Signal();
-    std::cout << m_name << " unlocked pipeline" << std::endl;
+    //std::cout << m_name << " unlocked pipeline" << std::endl;
 }
 
 void Customer::dispenseGas(float amount) {
@@ -135,4 +136,3 @@ int Customer::generateGasAmount() {
     return rand() % (71);
 }
 
-// TODO need to make customer pipelines typesafe!!

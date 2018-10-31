@@ -24,6 +24,9 @@
     <ClInclude Include="..\..\rt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SafePrint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Pump.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\rt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SafePrint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

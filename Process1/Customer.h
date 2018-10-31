@@ -11,7 +11,6 @@ class Customer :
 public:
     Customer();
     int main(void);
-    int getCCNumber();
     void createPipeline(const std::string pipelineStr);
     void createSemaphore(const std::string semaphoreName);
     void purchaseGas();
@@ -22,6 +21,7 @@ public:
     std::string getName();
 
 private:
+    int getCCNumber();
     int generateCCNum();
     int generateGasAmount();
     void swipeCreditCard(CustomerPipelineData& data, const float pricePerLiter);
@@ -37,7 +37,7 @@ private:
     GasPrice m_prices;
 
     std::unique_ptr<CSemaphore> m_pipelineSemaphore = nullptr;
-    std::unique_ptr<CPipe> m_pipelinePtr = nullptr;
+    std::unique_ptr<CTypedPipe<CustomerPipelineData>> m_pipelinePtr = nullptr;
 };
 
 // Vector of names from which we will generate customer names
