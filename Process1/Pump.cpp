@@ -40,16 +40,24 @@ int Pump::main(void) {
     // Create the mutex to protect the customer pipeline
     m_customerSemaphore = std::make_unique<CSemaphore>(getSemaphoreName(), 1, 1);
    
+    // Draw liters in each fuel tank
+    m_fuelTankSemaphore.Wait();
+    // Ternarary operator for debugging when launching Process1 without Assignmen1
+    float gas = m_fuelTankStatusPtr->m_gasVec[0] ? m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1] : 400.f;
+    m_fuelTankSemaphore.Signal();
+    std::string gasString = "Liters: " + std::to_string(gas);
+    m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3);
+
     // Draw the grid
-    m_safePrint.drawHorizontalLine(3);
-    m_safePrint.drawVerticalLine(m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 4);
-    m_safePrint.drawHorizontalLine(9);
+    m_safePrint.drawHorizontalLine(4);
+    m_safePrint.drawVerticalLine(m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 5);
+    m_safePrint.drawHorizontalLine(12);
     while (true) {
         // Check if we have a customer in the queue, if so, make them the current customer and remove them from the outstanding queue
         if (m_customerVec.size()) {
             m_currentCustomer = m_customerVec.at(0);
             m_customerVec.erase(m_customerVec.begin());
-            int refCount = 10;
+            int refCount = 13;
             
             // Update the customers in queue
             m_safePrint.clearColumn(m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, refCount);
@@ -94,11 +102,13 @@ int Pump::main(void) {
             std::string priceStr = priceSS.str();
 
             // Print out the customer credentials
-            m_safePrint.sPrint("Name:   " + customerData.m_name, m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 4);
-            m_safePrint.sPrint("Liters: " + litersStr, m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 5);
-            m_safePrint.sPrint("Price:  " + priceStr, m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 6);
-            m_safePrint.sPrint("Grade:  " + gradeToString(customerData.m_grade), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 7);
-            m_safePrint.sPrint("CC Num: " + std::to_string(customerData.m_ccNum), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 8);
+            m_safePrint.sPrint("Name:   " + customerData.m_name, m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 5);
+            m_safePrint.sPrint("Liters: " + litersStr, m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 6);
+            m_safePrint.sPrint("L Disp: " + std::to_string(m_currentCustomer->getLiters()), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 7);
+            m_safePrint.sPrint("Price:  " + priceStr, m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 8);
+            m_safePrint.sPrint("Grade:  " + gradeToString(customerData.m_grade), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 9);
+            m_safePrint.sPrint("CC Num: " + std::to_string(customerData.m_ccNum), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 10);
+            m_safePrint.sPrint("Status: " + m_currentCustomer->getStatus(), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 11);
 
 
             // Lock the semaphore before modifying the data
@@ -111,13 +121,20 @@ int Pump::main(void) {
             m_pumpStatusPtr->m_price = customerData.m_price;
             // Signal the producer semaphore
             m_producerSemaphore.Signal();
-            //std::cout << "Pump " << m_pumpNum << " has updated pump status" << std::endl;
+
+            // Change the customer status to waiting
+            m_currentCustomer->setStatus(Customer::Status::WAITING);
+            m_safePrint.sPrint("Status: " + m_currentCustomer->getStatus(), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 11);
 
             // Wait for signal from attendant confirming that we can begin fueling
             m_signal.Wait();
 
             // Charge the customer
             m_currentCustomer->charge(customerData.m_price);
+
+            // Change the customer status to Fueling
+            m_currentCustomer->setStatus(Customer::Status::FUELLING);
+            m_safePrint.sPrint("Status: " + m_currentCustomer->getStatus(), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 11);
 
             // Begin the fueling process...
             float litersFilled = 0;
@@ -126,11 +143,15 @@ int Pump::main(void) {
                 //std::cout << "Liters: " << litersFilled << std::endl;
                 litersFilled += 0.5;
                 m_currentCustomer->dispenseGas(0.5);
+                m_safePrint.sPrint("L Disp: " + std::to_string(m_currentCustomer->getLiters()), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 7);
 
                 // Decrement the value in the fuel storage by 0.5
                 m_fuelTankSemaphore.Wait();
                 m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1] -= 0.5;
+                auto gas = m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1];
                 m_fuelTankSemaphore.Signal();
+                std::string gasString = "Liters: " + std::to_string(gas);
+                m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3);
 
                 // Sleep for 1 seconds
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -170,7 +191,7 @@ std::string Pump::getPipelineName() {
 // Add a new customer to pump customer queue, pass unique_ptr by reference
 void Pump::addCustomer(Customer* newCustomer) {
     m_customerVec.push_back(newCustomer);
-    int refCount = 10;
+    int refCount = 13;
     // Display the customers in queue
     m_safePrint.clearColumn(m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, refCount);
     for (const auto& customer : m_customerVec) {

@@ -9,6 +9,12 @@ class Customer :
     public ActiveClass {
 
 public:
+    enum class Status {
+        PURCHASING,
+        WAITING,
+        FUELLING
+    };
+
     Customer();
     int main(void);
     void createPipeline(const std::string pipelineStr);
@@ -18,9 +24,13 @@ public:
     void setPrices(GasPrice prices);
     void driveAway() {};
     void charge(float amount);
+    float getLiters() { return m_liters; };
     std::string getName();
+    std::string getStatus();
+    void setStatus(Status status);
 
 private:
+
     int getCCNumber();
     int generateCCNum();
     int generateGasAmount();
@@ -29,6 +39,7 @@ private:
     std::string generateName();
     GasGrade generateGasGrade();
 
+    Status m_state = Status::PURCHASING;
     const static int MAX_GAS_LITERS = 70; 
     int m_cardNum;
     float m_liters;

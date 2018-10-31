@@ -17,7 +17,7 @@ int GasStationComputer::main(void) {
 
     // Set the initial quantity of gas for each of the 4 pumps
     for (int i = 0; i < 4; ++i) {
-        m_fuelTankStatusPtr->m_gasVec.push_back(MAX_FUELTANK_CAPACITY);
+        m_fuelTankStatusPtr->m_gasVec[i] = MAX_FUELTANK_CAPACITY;
     }
 
     // Set the initial gas prices
@@ -99,7 +99,6 @@ GasStationComputer::~GasStationComputer() {
 
 int GasStationComputer::checkFuelTankStatus(void* args) {
     // Thread Function
-    if (true) return 0; // TODO remove this line
     // Create the Fuel Tank data pool
     std::cout << "Check Fuel Tank Status thread function" << std::endl;
     while (true) {

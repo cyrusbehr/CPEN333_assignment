@@ -24,12 +24,18 @@
     <ClCompile Include="GasStationComputer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SafePrint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\rt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GasStationComputer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SafePrint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

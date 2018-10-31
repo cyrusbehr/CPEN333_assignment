@@ -40,7 +40,7 @@ struct CustomerPipelineData {
 };
 
 struct FuelTankStatus {
-    std::vector<float> m_gasVec;
+    float m_gasVec[4];
     GasPrice m_prices;
 };
 

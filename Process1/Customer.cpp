@@ -85,17 +85,30 @@ void Customer::purchaseGas() {
     // Remove the gas hose...
     removeGasHose();
 
-    //std::cout << m_name << " waiting for pipeline..." << std::endl;
     // Lock the pipeline semaphore
     m_pipelineSemaphore->Wait(); 
 
-    //std::cout << m_name << " about to write into pipeline" << std::endl;
     // Write data into pipeline
     m_pipelinePtr->Write(&pipelineData);
 
     // Unlock the pipeline semaphore
     m_pipelineSemaphore->Signal();
-    //std::cout << m_name << " unlocked pipeline" << std::endl;
+}
+
+void Customer::setStatus(Status status) {
+    m_state = status;
+}
+
+std::string Customer::getStatus() {
+    if (m_state == Status::PURCHASING) {
+        return "Purchasing..."; 
+    }
+    else if (m_state == Status::FUELLING) {
+        return "Fueling...";
+    }
+    else {
+        return "Waiting for confirm";
+    }
 }
 
 void Customer::dispenseGas(float amount) {
