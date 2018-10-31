@@ -39,6 +39,7 @@ private:
         CSemaphore* m_pumpConsumerLock = nullptr;
         CSemaphore* m_signal = nullptr;
         std::vector<Transaction> m_transactionVec;
+        int m_pumpNum;
     };
 
     // Pump Status Objects

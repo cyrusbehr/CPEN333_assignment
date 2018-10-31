@@ -15,13 +15,13 @@ int main(void) {
     // Build the grid
     safePrint.drawHorizontalLine(1);    
     safePrint.drawHorizontalLine(4);
-    safePrint.drawHorizontalLine(12);
+    safePrint.drawHorizontalLine(11);
 
     for (int i = 0; i < 4; ++i) {
         // Create the title for each pump, center within the 
         std::string pumpName ("Pump" + std::to_string(i));
         safePrint.sPrint(pumpName, safePrint.getColumnSize() / 8 - pumpName.length() / 2 + safePrint.getColumnSize() / 4 * (i), 2);
-        safePrint.drawVerticalLine(safePrint.getColumnSize() / 4 * (i), 5);
+        safePrint.drawVerticalLine(safePrint.getColumnSize() / 4 * (i), 5, 11);
 
     }
 

@@ -44,6 +44,10 @@ int GasStationComputer::main(void) {
     m_pump2.m_signal = new CSemaphore("Pump2Signal", 0, 1);
     m_pump3.m_signal = new CSemaphore("Pump3Signal", 0, 1);
     m_pump4.m_signal = new CSemaphore("Pump4Signal", 0, 1);
+    m_pump1.m_pumpNum = 1;
+    m_pump2.m_pumpNum = 2;
+    m_pump3.m_pumpNum = 3;
+    m_pump4.m_pumpNum = 4;
 
     // Create child thread to display Fuel Tank Data Pool data
     ClassThread<GasStationComputer> fuelTankStatusThread(this, &GasStationComputer::checkFuelTankStatus, ACTIVE, nullptr);
@@ -148,9 +152,8 @@ int GasStationComputer::checkPumpStatus(void* args) {
     auto& pStat = status->m_pumpStatus;
     while (true) {
         Transaction newTransaction;
-       // std::cout << "Waiting on pumpProducerLock" << std::endl;
         status->m_pumpProducerLock->Wait();
-        //std::cout << "Pump Producer lock triggered" << std::endl;
+
         // Get new transaction information and add it to a record of all transactions
         newTransaction.m_cardNum = pStat->m_creditCardNum;
         newTransaction.m_customerName = pStat->m_customerName;
@@ -158,13 +161,18 @@ int GasStationComputer::checkPumpStatus(void* args) {
         newTransaction.m_liters = pStat->m_liters;
         newTransaction.m_price = pStat->m_price;
         status->m_transactionVec.push_back(newTransaction);
-
-        //std::cout << "New Customer:" << std::endl;
-        //std::cout << pStat->m_customerName << std::endl;
-        //std::cout << pStat->m_liters << " Liters for " << pStat->m_price << std::endl;
         status->m_pumpConsumerLock->Signal();
+
+        m_safePrint.sPrint("Name:   " + newTransaction.m_customerName, m_safePrint.getColumnSize() / 4 * (status->m_pumpNum - 1) + 1, 5);
+        m_safePrint.sPrint("Liters: " + std::to_string(newTransaction.m_liters), m_safePrint.getColumnSize() / 4 * (status->m_pumpNum - 1) + 1, 6);
+        m_safePrint.sPrint("Price:  " + std::to_string(newTransaction.m_price), m_safePrint.getColumnSize() / 4 * (status->m_pumpNum - 1) + 1, 7);
+        m_safePrint.sPrint("Grade:  " + m_safePrint.gradeToString(newTransaction.m_grade), m_safePrint.getColumnSize() / 4 * (status->m_pumpNum - 1) + 1, 8);
+        m_safePrint.sPrint("CC Num: " + std::to_string(newTransaction.m_cardNum), m_safePrint.getColumnSize() / 4 * (status->m_pumpNum - 1) + 1, 9);
+        m_safePrint.sPrint("Status: Waiting for approval", m_safePrint.getColumnSize() / 4 * (status->m_pumpNum - 1) + 1, 10);
     }
     return 0;
 }
 // TODO have a function whose only job is to read the input of the keyboard. if the user specifies the fill command, it sets a bool. This then sends a messaage back to the pump class which checks if there is a customer there. If so, then it fills the tanks. It should be within the listing function in the pump where we check if there is enough gas in the tank, deduct the price from the customer, and finally delete the customer
 // should check if there is enough gas in the function which listens to the keyboard inputs
+// blink red when gas is below threshold
+// rendevous

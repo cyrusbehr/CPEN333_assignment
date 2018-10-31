@@ -86,7 +86,9 @@ int Pump::main(void) {
 
             // Read the information that the customer has sent from the pipeline
             CustomerPipelineData customerData;
+            m_customerSemaphore->Wait();
             m_pipelinePtr->Read(&customerData);
+            m_customerSemaphore->Signal();
 
             // Convert price and liters from float to string with set precision
             std::ostringstream litersSS;
@@ -115,7 +117,7 @@ int Pump::main(void) {
             // TODO also send the pump information
             m_consumerSemaphore.Wait();
             m_pumpStatusPtr->m_creditCardNum = customerData.m_ccNum;
-            m_pumpStatusPtr->m_customerName = customerData.m_name;
+            m_pumpStatusPtr->m_customerName = std::string(customerData.m_name);
             m_pumpStatusPtr->m_grade = customerData.m_grade;
             m_pumpStatusPtr->m_liters = customerData.m_liters;
             m_pumpStatusPtr->m_price = customerData.m_price;
