@@ -70,8 +70,9 @@ int GasStationComputer::main(void) {
     return 0;
 }
 
-GasStationComputer::GasStationComputer()
+GasStationComputer::GasStationComputer(SafePrint& safePrint)
     :m_fuelTankSemaphore(FUEL_TANK_SEMAPHORE_STR, 1, 1)
+    , m_safePrint(safePrint)
 {}
 
 GasStationComputer::~GasStationComputer() {
@@ -100,36 +101,39 @@ GasStationComputer::~GasStationComputer() {
 int GasStationComputer::checkFuelTankStatus(void* args) {
     // Thread Function
     // Create the Fuel Tank data pool
-    std::cout << "Check Fuel Tank Status thread function" << std::endl;
     while (true) {
         // If any of the gas tanks have less than 200 liters, they should flash red
         m_fuelTankSemaphore.Wait();
         if (m_fuelTankStatusPtr->m_gasVec[0] <= 200) {
-            std::cout << "Gas tank 1: " << m_fuelTankStatusPtr->m_gasVec[0] << std::endl;
+            // Flash RED
         }
         else {
-            // Flash RED
+            std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[0]);
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 0, 3);
         }
 
         if (m_fuelTankStatusPtr->m_gasVec[1] <= 200) {
             // Flash RED
         }
         else {
-            std::cout << "Gas tank 2: " << m_fuelTankStatusPtr->m_gasVec[1] << std::endl;
+            std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[1]);
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 1, 3);
         }
 
         if (m_fuelTankStatusPtr->m_gasVec[2] <= 200) {
             // Flash RED
         }
         else {
-            std::cout << "Gas tank 3: " << m_fuelTankStatusPtr->m_gasVec[2] << std::endl;
+            std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[2]);
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 2, 3);
         }
 
         if (m_fuelTankStatusPtr->m_gasVec[3] <= 200) {
             // FLash RED
         }
         else {
-            std::cout << "Gas tank 4: " << m_fuelTankStatusPtr->m_gasVec[3] << std::endl;
+            std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[3]);
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 3, 3);
         }
 
         m_fuelTankSemaphore.Signal();
@@ -144,9 +148,9 @@ int GasStationComputer::checkPumpStatus(void* args) {
     auto& pStat = status->m_pumpStatus;
     while (true) {
         Transaction newTransaction;
-        std::cout << "Waiting on pumpProducerLock" << std::endl;
+       // std::cout << "Waiting on pumpProducerLock" << std::endl;
         status->m_pumpProducerLock->Wait();
-        std::cout << "Pump Producer lock triggered" << std::endl;
+        //std::cout << "Pump Producer lock triggered" << std::endl;
         // Get new transaction information and add it to a record of all transactions
         newTransaction.m_cardNum = pStat->m_creditCardNum;
         newTransaction.m_customerName = pStat->m_customerName;
@@ -155,9 +159,9 @@ int GasStationComputer::checkPumpStatus(void* args) {
         newTransaction.m_price = pStat->m_price;
         status->m_transactionVec.push_back(newTransaction);
 
-        std::cout << "New Customer:" << std::endl;
-        std::cout << pStat->m_customerName << std::endl;
-        std::cout << pStat->m_liters << " Liters for " << pStat->m_price << std::endl;
+        //std::cout << "New Customer:" << std::endl;
+        //std::cout << pStat->m_customerName << std::endl;
+        //std::cout << pStat->m_liters << " Liters for " << pStat->m_price << std::endl;
         status->m_pumpConsumerLock->Signal();
     }
     return 0;

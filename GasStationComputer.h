@@ -2,6 +2,7 @@
 #include "..\rt.h"
 #include "IncludeFiles.h"
 #include "Shared.h"
+#include "SafePrint.h"
 
 #ifndef __GasStationComputer__
 #define __GasStationComputer__
@@ -20,7 +21,7 @@ class GasStationComputer
     : public ActiveClass
 {
 public:
-    GasStationComputer();
+    GasStationComputer(SafePrint& safePrint);
     ~GasStationComputer();
     int main(void);
 private:
@@ -49,6 +50,8 @@ private:
     // FuelTank Semaphore
     CSemaphore m_fuelTankSemaphore;
 
+    // Reference to safePrint
+    SafePrint& m_safePrint;
 };
 
 #endif
