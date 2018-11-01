@@ -78,7 +78,6 @@ int GasStationComputer::main(void) {
 
     // TODO we need rendevous in all of our child threads!
     // TODO attendant can change gas price
-    // TODO attendant can disable pumps
 
     fuelTankStatusThread.WaitForThread();
     pump1StatusThread.WaitForThread();
@@ -198,7 +197,7 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
 }
 
 int GasStationComputer::readFromKeyboard(void* args) {
-    std::string msg = "Enter a command [1/2/3/4 Dispense gas to pump 1/2/3/4, 5/6/7/8 refill tank 5/6/7/8, print to display all transactions]";
+    std::string msg = "Enter a command [1/2/3/4 Dispense gas to pump 1/2/3/4, 5/6/7/8 refill tank 5/6/7/8, print to display all transactions, d1/d2/d3/d4 to disable pumps, set87/set89/set91/set92 to set new price for grades]";
     m_safePrint.sPrint(msg, 0, 13);
     while (true) {
         std::string cmd;
@@ -265,6 +264,46 @@ int GasStationComputer::readFromKeyboard(void* args) {
          else if (cmd == "8") {
             m_fuelTankSemaphore.Wait();
             m_fuelTankStatusPtr->m_gasVec[3] = MAX_FUELTANK_CAPACITY;
+            m_fuelTankSemaphore.Signal();
+        }
+         else if (cmd == "d1") {
+            m_isEnabledpump1 = false;
+        }
+         else if (cmd == "d2") {
+            m_isEnabledpump2 = false;
+        }
+         else if (cmd == "d3") {
+            m_isEnabledpump3 = false;
+        }
+         else if (cmd == "d4") {
+            m_isEnabledpump4 = false;
+        }
+         else if (cmd == "set87") {
+            int newPrice;
+            std::cin >> newPrice;
+            m_fuelTankSemaphore.Wait();
+            m_fuelTankStatusPtr->m_prices.m_g87Price = newPrice;
+            m_fuelTankSemaphore.Signal();
+        }
+         else if (cmd == "set89") {
+            int newPrice;
+            std::cin >> newPrice;
+            m_fuelTankSemaphore.Wait();
+            m_fuelTankStatusPtr->m_prices.m_g89Price = newPrice;
+            m_fuelTankSemaphore.Signal();
+        }
+         else if (cmd == "set91") {
+            int newPrice;
+            std::cin >> newPrice;
+            m_fuelTankSemaphore.Wait();
+            m_fuelTankStatusPtr->m_prices.m_g91Price = newPrice;
+            m_fuelTankSemaphore.Signal();
+        }
+         else if (cmd == "set92") {
+            int newPrice;
+            std::cin >> newPrice;
+            m_fuelTankSemaphore.Wait();
+            m_fuelTankStatusPtr->m_prices.m_g92Price = newPrice;
             m_fuelTankSemaphore.Signal();
         }
     }
