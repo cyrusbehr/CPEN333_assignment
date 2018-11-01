@@ -76,9 +76,6 @@ int GasStationComputer::main(void) {
         ACTIVE
     );
 
-    // TODO we need rendevous in all of our child threads!
-    // TODO attendant can change gas price
-
     fuelTankStatusThread.WaitForThread();
     pump1StatusThread.WaitForThread();
     pump2StatusThread.WaitForThread();
@@ -204,28 +201,28 @@ int GasStationComputer::readFromKeyboard(void* args) {
         std::cin >> cmd;
         if (cmd == "1") {
             // Check that we actually have enough gas in tank
-            if (m_hasGas1) {
+            if (m_hasGas1 && m_isEnabledpump1) {
                 m_pump1.m_signal->Signal();
                 m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (0) + 1, 10);
             }
         }
         else if (cmd == "2") {
             // Check that we actually have enough gas in tank
-            if (m_hasGas2) {
+            if (m_hasGas2  && m_isEnabledpump2) {
                 m_pump2.m_signal->Signal();
                 m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (1) + 1, 10);
             }
         }
         else if (cmd == "3") {
             // Check that we actually have enough gas in tank
-            if (m_hasGas3) {
+            if (m_hasGas3  && m_isEnabledpump3) {
                 m_pump3.m_signal->Signal();
                 m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (2) + 1, 10);
             }
         }
         else if (cmd == "4") {
             // Check that we actually have enough gas in tank
-            if (m_hasGas4) {
+            if (m_hasGas4  && m_isEnabledpump4) {
             m_pump4.m_signal->Signal();
             m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (3) + 1, 10);
             }
@@ -267,40 +264,40 @@ int GasStationComputer::readFromKeyboard(void* args) {
             m_fuelTankSemaphore.Signal();
         }
          else if (cmd == "d1") {
-            m_isEnabledpump1 = false;
+            m_isEnabledpump1 = !m_isEnabledpump1;
         }
          else if (cmd == "d2") {
-            m_isEnabledpump2 = false;
+            m_isEnabledpump2 = !m_isEnabledpump2;
         }
          else if (cmd == "d3") {
-            m_isEnabledpump3 = false;
+            m_isEnabledpump3 = !m_isEnabledpump3;
         }
          else if (cmd == "d4") {
-            m_isEnabledpump4 = false;
+            m_isEnabledpump4 = !m_isEnabledpump4;
         }
          else if (cmd == "set87") {
-            int newPrice;
+            float newPrice;
             std::cin >> newPrice;
             m_fuelTankSemaphore.Wait();
             m_fuelTankStatusPtr->m_prices.m_g87Price = newPrice;
             m_fuelTankSemaphore.Signal();
         }
          else if (cmd == "set89") {
-            int newPrice;
+            float newPrice;
             std::cin >> newPrice;
             m_fuelTankSemaphore.Wait();
             m_fuelTankStatusPtr->m_prices.m_g89Price = newPrice;
             m_fuelTankSemaphore.Signal();
         }
          else if (cmd == "set91") {
-            int newPrice;
+            float newPrice;
             std::cin >> newPrice;
             m_fuelTankSemaphore.Wait();
             m_fuelTankStatusPtr->m_prices.m_g91Price = newPrice;
             m_fuelTankSemaphore.Signal();
         }
          else if (cmd == "set92") {
-            int newPrice;
+            float newPrice;
             std::cin >> newPrice;
             m_fuelTankSemaphore.Wait();
             m_fuelTankStatusPtr->m_prices.m_g92Price = newPrice;
