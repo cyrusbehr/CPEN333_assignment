@@ -8,7 +8,6 @@ int main(void) {
     srand(time(NULL));
 
     // TODO make gas flash red when below threshold
-    // TODO rendevous
 
     SafePrint safePrint;
     std::string headerStr = "PUMP PROCESS";

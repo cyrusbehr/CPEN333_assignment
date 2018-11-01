@@ -13,7 +13,7 @@ int main(void) {
     safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length() / 2, 0);
     
     // Build the grid
-    safePrint.drawHorizontalLine(1);    
+    safePrint.drawHorizontalLine(1);
     safePrint.drawHorizontalLine(4);
     safePrint.drawHorizontalLine(11);
 

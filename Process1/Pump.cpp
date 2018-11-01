@@ -82,8 +82,6 @@ int Pump::main(void) {
             // Trigger the customer to purchase gas
             m_currentCustomer->purchaseGas();
 
-            // TODO not sure if we actually require a semaphore in the read command, or if it will hand until we read it anyways
-
             // Read the information that the customer has sent from the pipeline
             CustomerPipelineData customerData;
             m_customerSemaphore->Wait();
@@ -114,7 +112,6 @@ int Pump::main(void) {
 
 
             // Lock the semaphore before modifying the data
-            // TODO also send the pump information
             m_consumerSemaphore.Wait();
             m_pumpStatusPtr->m_creditCardNum = customerData.m_ccNum;
             m_pumpStatusPtr->m_customerName = std::string(customerData.m_name);

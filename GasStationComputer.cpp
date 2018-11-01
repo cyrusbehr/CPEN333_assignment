@@ -64,6 +64,9 @@ int GasStationComputer::main(void) {
     );
 
     // TODO we need rendevous in all of our child threads!
+    // TODO attendant can change gas price
+    // TODO its 500 liters per grade, not per pump
+    // TODO attendant can disable pumps
 
     fuelTankStatusThread.WaitForThread();
     pump1StatusThread.WaitForThread();
@@ -108,36 +111,37 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
     while (true) {
         // If any of the gas tanks have less than 200 liters, they should flash red
         m_fuelTankSemaphore.Wait();
-        if (m_fuelTankStatusPtr->m_gasVec[0] <= 200) {
-            // Flash RED
-        }
-        else {
+        {
+            if (m_fuelTankStatusPtr->m_gasVec[0] <= 200) {
+                TEXT_COLOUR(12, 0);
+            }
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[0]);
             m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 0, 3);
+            TEXT_COLOUR();
         }
-
-        if (m_fuelTankStatusPtr->m_gasVec[1] <= 200) {
-            // Flash RED
-        }
-        else {
+        {
+            if (m_fuelTankStatusPtr->m_gasVec[1] <= 200) {
+                TEXT_COLOUR(12, 0);
+            }
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[1]);
             m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 1, 3);
+            TEXT_COLOUR();
         }
-
-        if (m_fuelTankStatusPtr->m_gasVec[2] <= 200) {
-            // Flash RED
-        }
-        else {
+        {
+            if (m_fuelTankStatusPtr->m_gasVec[2] <= 200) {
+                TEXT_COLOUR(12, 0);
+            }
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[2]);
             m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 2, 3);
+            TEXT_COLOUR();
         }
-
-        if (m_fuelTankStatusPtr->m_gasVec[3] <= 200) {
-            // FLash RED
-        }
-        else {
+        {
+            if (m_fuelTankStatusPtr->m_gasVec[3] <= 200) {
+                TEXT_COLOUR(12, 0);
+            }
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[3]);
             m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 3, 3);
+            TEXT_COLOUR();
         }
 
         m_fuelTankSemaphore.Signal();
