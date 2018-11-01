@@ -30,10 +30,10 @@ private:
     int readFromKeyboard(void* args);
     int waitForClearSignal(void* args);
 
-    std::vector<Transaction> m_transactions;
-
     // Data pool vars
     FuelTankStatus* m_fuelTankStatusPtr    = nullptr;
+
+    std::vector<Transaction> m_transactionVec;
 
     struct PumpStatusPtrLock {
         PumpStatus* m_pumpStatus = nullptr;

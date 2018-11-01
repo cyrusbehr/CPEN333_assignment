@@ -140,6 +140,8 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
     // Create the Fuel Tank data pool
     while (true) {
         // If any of the gas tanks have less than 200 liters, they should flash red
+        // m_hasGas used to determine if there is enough gas to begin a gas up procedure
+        // Block scope b/c colliding var name, easier than changing var names...
         m_fuelTankSemaphore.Wait();
         {
             if (m_fuelTankStatusPtr->m_gasVec[0] <= 200) {
@@ -197,45 +199,76 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
 }
 
 int GasStationComputer::readFromKeyboard(void* args) {
-    std::string msg = "Enter a command [1/2/3/4 Dispense gas to pump 1/2/3/4, 5/6/7/8 refill tank 5/6/7/8]";
+    std::string msg = "Enter a command [1/2/3/4 Dispense gas to pump 1/2/3/4, 5/6/7/8 refill tank 5/6/7/8, print to display all transactions]";
     m_safePrint.sPrint(msg, 0, 13);
     while (true) {
-        int cmd;
+        std::string cmd;
         std::cin >> cmd;
-        switch (cmd)
-        {
-        case 1:
+        if (cmd == "1") {
             // Check that we actually have enough gas in tank
-            if (!m_hasGas1) 
-                break;
-            m_pump1.m_signal->Signal();
-            m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (0) + 1, 10);
-            break;
-        case 2:
+            if (m_hasGas1) {
+                m_pump1.m_signal->Signal();
+                m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (0) + 1, 10);
+            }
+        }
+        else if (cmd == "2") {
             // Check that we actually have enough gas in tank
-            if (!m_hasGas2)
-                break;
-            m_pump2.m_signal->Signal();
-            m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (1) + 1, 10);
-            break;
-        case 3:
+            if (m_hasGas2) {
+                m_pump2.m_signal->Signal();
+                m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (1) + 1, 10);
+            }
+        }
+        else if (cmd == "3") {
             // Check that we actually have enough gas in tank
-            if (!m_hasGas3)
-                break;
-            m_pump3.m_signal->Signal();
-            m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (2) + 1, 10);
-            break;
-        case 4:
+            if (m_hasGas3) {
+                m_pump3.m_signal->Signal();
+                m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (2) + 1, 10);
+            }
+        }
+        else if (cmd == "4") {
             // Check that we actually have enough gas in tank
-            if (!m_hasGas4)
-                break;
+            if (m_hasGas4) {
             m_pump4.m_signal->Signal();
             m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (3) + 1, 10);
-            break;
-
-        default:
-            break;
+            }
         }
+         else if (cmd == "print") {
+            int i = 0;
+            int j = 0;
+            for (const auto& trans : m_transactionVec) {
+                std::time_t t = std::chrono::system_clock::to_time_t(trans.m_currentTime);
+                char timeStr[MAX_NAME_LENGTH];
+                ctime_s(timeStr, sizeof(timeStr), &t);
+                m_safePrint.sPrint(std::to_string(++j) + ") Name:" + trans.m_customerName, 1, 15 + i++);
+                m_safePrint.sPrint("CC: " + std::to_string(trans.m_cardNum), 4, 15 + i++);
+                m_safePrint.sPrint("Time: " + std::string(timeStr, MAX_NAME_LENGTH), 4, 15 + i++);
+                m_safePrint.sPrint("Grade: " + m_safePrint.gradeToString(trans.m_grade), 4, 15 + i++);
+                m_safePrint.sPrint("Liters: " + std::to_string(trans.m_liters), 4, 15 + i++);
+                m_safePrint.sPrint("Price: " + std::to_string(trans.m_price), 4, 15 + i++);
+                m_safePrint.sPrint(" ", 4, 15 + i++);
+            }
+        }
+         else if (cmd == "5") {
+            m_fuelTankSemaphore.Wait();
+            m_fuelTankStatusPtr->m_gasVec[0] = MAX_FUELTANK_CAPACITY;
+            m_fuelTankSemaphore.Signal();
+        }
+         else if (cmd == "6") {
+            m_fuelTankSemaphore.Wait();
+            m_fuelTankStatusPtr->m_gasVec[1] = MAX_FUELTANK_CAPACITY;
+            m_fuelTankSemaphore.Signal();
+        }
+         else if (cmd == "7") {
+            m_fuelTankSemaphore.Wait();
+            m_fuelTankStatusPtr->m_gasVec[2] = MAX_FUELTANK_CAPACITY;
+            m_fuelTankSemaphore.Signal();
+        }
+         else if (cmd == "8") {
+            m_fuelTankSemaphore.Wait();
+            m_fuelTankStatusPtr->m_gasVec[3] = MAX_FUELTANK_CAPACITY;
+            m_fuelTankSemaphore.Signal();
+        }
+        // TODO implement commands 5/6/7/8
     }
     return 0;
 }
@@ -254,7 +287,9 @@ int GasStationComputer::checkPumpStatus(void* args) {
         newTransaction.m_grade = pStat->m_grade;
         newTransaction.m_liters = pStat->m_liters;
         newTransaction.m_price = pStat->m_price;
+        // Store transaction in overall transaction tracker, and tracker for each pump
         status->m_transactionVec.push_back(newTransaction);
+        m_transactionVec.push_back(newTransaction);
         status->m_pumpConsumerLock->Signal();
 
         m_safePrint.sPrint("Name:   " + newTransaction.m_customerName, m_safePrint.getColumnSize() / 4 * (status->m_pumpNum - 1) + 1, 5);
@@ -266,7 +301,4 @@ int GasStationComputer::checkPumpStatus(void* args) {
     }
     return 0;
 }
-// TODO have a function whose only job is to read the input of the keyboard. if the user specifies the fill command, it sets a bool. This then sends a messaage back to the pump class which checks if there is a customer there. If so, then it fills the tanks. It should be within the listing function in the pump where we check if there is enough gas in the tank, deduct the price from the customer, and finally delete the customer
-// should check if there is enough gas in the function which listens to the keyboard inputs
-
 // TODO need to call our clear function when a new customer moves in
