@@ -79,7 +79,6 @@ int GasStationComputer::main(void) {
     // TODO we need rendevous in all of our child threads!
     // TODO attendant can change gas price
     // TODO attendant can disable pumps
-    // Command so that attendant can display list of all transactions
 
     fuelTankStatusThread.WaitForThread();
     pump1StatusThread.WaitForThread();
@@ -268,7 +267,6 @@ int GasStationComputer::readFromKeyboard(void* args) {
             m_fuelTankStatusPtr->m_gasVec[3] = MAX_FUELTANK_CAPACITY;
             m_fuelTankSemaphore.Signal();
         }
-        // TODO implement commands 5/6/7/8
     }
     return 0;
 }
@@ -301,4 +299,3 @@ int GasStationComputer::checkPumpStatus(void* args) {
     }
     return 0;
 }
-// TODO need to call our clear function when a new customer moves in
