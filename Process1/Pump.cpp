@@ -137,9 +137,7 @@ int Pump::main(void) {
 
             // Begin the fueling process...
             float litersFilled = 0;
-            //std::cout << "Dispensing fuel..." << std::endl;
             while (customerData.m_liters - litersFilled > 0) {
-                //std::cout << "Liters: " << litersFilled << std::endl;
                 litersFilled += 0.5;
                 m_currentCustomer->dispenseGas(0.5);
                 m_safePrint.sPrint("L Disp: " + std::to_string(m_currentCustomer->getLiters()), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 7);
@@ -153,7 +151,7 @@ int Pump::main(void) {
                 m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3);
 
                 // Sleep for 1 seconds
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
 
             //std::cout << "Finished!" << std::endl;

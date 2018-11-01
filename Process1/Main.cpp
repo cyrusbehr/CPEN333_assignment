@@ -7,8 +7,6 @@ int main(void) {
     // Seed the random function
     srand(time(NULL));
 
-    // TODO make gas flash red when below threshold
-
     SafePrint safePrint;
     std::string headerStr = "PUMP PROCESS";
     safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length()/2, 0);

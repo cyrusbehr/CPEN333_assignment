@@ -101,10 +101,10 @@ void Customer::setStatus(Status status) {
 
 std::string Customer::getStatus() {
     if (m_state == Status::PURCHASING) {
-        return "Purchasing..."; 
+        return "Purchasing...       "; 
     }
     else if (m_state == Status::FUELLING) {
-        return "Fueling...";
+        return "Fueling...          ";
     }
     else {
         return "Waiting for confirm";

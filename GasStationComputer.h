@@ -27,6 +27,7 @@ public:
 private:
     int checkFuelTankStatus(void* args);
     int checkPumpStatus(void* args);
+    int readFromKeyboard(void* args);
 
     std::vector<Transaction> m_transactions;
 
@@ -41,6 +42,18 @@ private:
         std::vector<Transaction> m_transactionVec;
         int m_pumpNum;
     };
+
+    // Status of the pumps
+    bool m_isEnabledpump1 = true;
+    bool m_isEnabledpump2 = true;
+    bool m_isEnabledpump3 = true;
+    bool m_isEnabledpump4 = true;
+
+    // Used to track if gas tank has sufficient gas to fuel
+    bool m_hasGas1 = true;
+    bool m_hasGas2 = true;
+    bool m_hasGas3 = true;
+    bool m_hasGas4 = true;
 
     // Pump Status Objects
     PumpStatusPtrLock m_pump1;

@@ -55,6 +55,9 @@ int GasStationComputer::main(void) {
     ClassThread<GasStationComputer> pump2StatusThread(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump2);
     ClassThread<GasStationComputer> pump3StatusThread(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump3);
     ClassThread<GasStationComputer> pump4StatusThread(this, &GasStationComputer::checkPumpStatus, ACTIVE, &m_pump4);
+    
+    // Create child thread to constantly read from keyboard
+    ClassThread<GasStationComputer> keyboardInputThread(this, &GasStationComputer::readFromKeyboard, ACTIVE, nullptr);
 
     // Launch the child process
     CProcess p1("C:\\Users\\cyrus\\source\\repos\\Mech4\\CPEN_333\\Assignment1\\Debug\\Process1.exe",
@@ -73,6 +76,7 @@ int GasStationComputer::main(void) {
     pump2StatusThread.WaitForThread();
     pump3StatusThread.WaitForThread();
     pump4StatusThread.WaitForThread();
+    keyboardInputThread.WaitForThread();
 
     return 0;
 }
@@ -114,6 +118,10 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
         {
             if (m_fuelTankStatusPtr->m_gasVec[0] <= 200) {
                 TEXT_COLOUR(12, 0);
+                m_hasGas1 = false;
+            }
+            else {
+                m_hasGas1 = true;
             }
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[0]);
             m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 0, 3);
@@ -122,6 +130,10 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
         {
             if (m_fuelTankStatusPtr->m_gasVec[1] <= 200) {
                 TEXT_COLOUR(12, 0);
+                m_hasGas2 = false;
+            }
+            else {
+                m_hasGas2 = true;
             }
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[1]);
             m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 1, 3);
@@ -130,6 +142,10 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
         {
             if (m_fuelTankStatusPtr->m_gasVec[2] <= 200) {
                 TEXT_COLOUR(12, 0);
+                m_hasGas3 = false;
+            }
+            else {
+                m_hasGas3 = true;
             }
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[2]);
             m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 2, 3);
@@ -138,6 +154,10 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
         {
             if (m_fuelTankStatusPtr->m_gasVec[3] <= 200) {
                 TEXT_COLOUR(12, 0);
+                m_hasGas4 = false;
+            }
+            else {
+                m_hasGas4 = true;
             }
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[3]);
             m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 3, 3);
@@ -146,6 +166,50 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
 
         m_fuelTankSemaphore.Signal();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+    return 0;
+}
+
+int GasStationComputer::readFromKeyboard(void* args) {
+    std::string msg = "Enter a command [1/2/3/4 Dispense gas to pump 1/2/3/4, 5/6/7/8 refill tank 5/6/7/8]";
+    m_safePrint.sPrint(msg, 0, 13);
+    while (true) {
+        int cmd;
+        std::cin >> cmd;
+        switch (cmd)
+        {
+        case 1:
+            // Check that we actually have enough gas in tank
+            if (!m_hasGas1) 
+                break;
+            m_pump1.m_signal->Signal();
+            m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (0) + 1, 10);
+            break;
+        case 2:
+            // Check that we actually have enough gas in tank
+            if (!m_hasGas2)
+                break;
+            m_pump2.m_signal->Signal();
+            m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (1) + 1, 10);
+            break;
+        case 3:
+            // Check that we actually have enough gas in tank
+            if (!m_hasGas3)
+                break;
+            m_pump3.m_signal->Signal();
+            m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (2) + 1, 10);
+            break;
+        case 4:
+            // Check that we actually have enough gas in tank
+            if (!m_hasGas4)
+                break;
+            m_pump4.m_signal->Signal();
+            m_safePrint.sPrint("Status: Fueling...           ", m_safePrint.getColumnSize() / 4 * (3) + 1, 10);
+            break;
+
+        default:
+            break;
+        }
     }
     return 0;
 }
@@ -178,5 +242,5 @@ int GasStationComputer::checkPumpStatus(void* args) {
 }
 // TODO have a function whose only job is to read the input of the keyboard. if the user specifies the fill command, it sets a bool. This then sends a messaage back to the pump class which checks if there is a customer there. If so, then it fills the tanks. It should be within the listing function in the pump where we check if there is enough gas in the tank, deduct the price from the customer, and finally delete the customer
 // should check if there is enough gas in the function which listens to the keyboard inputs
-// blink red when gas is below threshold
-// rendevous
+
+// TODO need to call our clear function when a new customer moves in
