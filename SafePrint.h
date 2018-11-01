@@ -17,6 +17,7 @@ public:
     void drawVerticalLine(int x, int yStart, int yEnd);
     int getRowSize();
     int getColumnSize();
+    void clearSection(int pumpNumber);
 
     std::string gradeToString(GasGrade grade);
 

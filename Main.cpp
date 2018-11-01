@@ -5,8 +5,8 @@
 // BONUS FEATURES
 // 1) Use MOVE_CURSOR to display everything in really nice way
 // 2) Display real time list of customers at pump
-// 3) Use of proper 3++. No global variables, Injection dependency, C++ 11 features
-//    Proper use of object oriented design, Shared files for code reduction 
+// 3) Use of proper 3++. No global variables, Injection dependency, C++ 11 features (unique_ptr, lock_guard)
+//    Proper use of object oriented design, Shared files for code reduction, Only c++ style cast, ect 
 
 int main(void) {
     // Seed the random timer

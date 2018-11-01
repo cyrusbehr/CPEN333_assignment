@@ -40,3 +40,9 @@ void SafePrint::clearColumn(int x, int yStart) {
         sPrint("                            ", x, i); // Require exactly 28 spaces to clear row
     }
 }
+
+void SafePrint::clearSection(int pumpNum) {
+    for (int i = 5; i < 12; ++i) {
+        sPrint("                             ", getColumnSize() / 4 * (pumpNum - 1) + 1, i);
+    }
+}

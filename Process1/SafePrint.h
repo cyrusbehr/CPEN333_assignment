@@ -15,6 +15,7 @@ public:
     void drawVerticalLine(int x, int yStart);
     int getRowSize();
     int getColumnSize();
+    void clearSection(int pumpNum);
 private:
     std::mutex m_mutex;
     int m_consoleRowSize = 100;

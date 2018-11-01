@@ -28,6 +28,7 @@ private:
     int checkFuelTankStatus(void* args);
     int checkPumpStatus(void* args);
     int readFromKeyboard(void* args);
+    int waitForClearSignal(void* args);
 
     std::vector<Transaction> m_transactions;
 
@@ -39,6 +40,7 @@ private:
         CSemaphore* m_pumpProducerLock = nullptr;
         CSemaphore* m_pumpConsumerLock = nullptr;
         CSemaphore* m_signal = nullptr;
+        CSemaphore* m_clearSignal = nullptr;
         std::vector<Transaction> m_transactionVec;
         int m_pumpNum;
     };

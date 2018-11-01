@@ -5,7 +5,8 @@
 #ifndef __Customer__
 #define __Customer__
 
-class Customer {
+class Customer 
+:public ActiveClass{
 
 public:
     enum class Status {

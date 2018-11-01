@@ -9,6 +9,7 @@ Pump::Pump(SafePrint& safePrint, const std::string pumpName, const int pumpNum, 
     , m_producerSemaphore(producerSemaphoreName, 0, 1)
     , m_consumerSemaphore(consumerSemaphoreString, 1, 1)
     , m_signal(pumpName + "Signal", 0, 1)
+    , m_clearSignal(pumpName + "ClearSignal", 0, 1)
     , m_fuelTankSemaphore(FUEL_TANK_SEMAPHORE_STR, 1, 1)
 {
     // Seed the random function generator
@@ -158,6 +159,12 @@ int Pump::main(void) {
             m_currentCustomer->driveAway();
             delete m_currentCustomer;
             m_currentCustomer = nullptr;
+
+            // Signal that the gasStationComputer should delete the customer
+            m_clearSignal.Signal();
+
+            // Clear the display
+            m_safePrint.clearSection(m_pumpNum);
         }
     }
     return 0;

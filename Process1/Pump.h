@@ -40,6 +40,7 @@ private:
     CSemaphore m_consumerSemaphore;
     CSemaphore m_signal;
     CSemaphore m_fuelTankSemaphore;
+    CSemaphore m_clearSignal;
 
 };
 

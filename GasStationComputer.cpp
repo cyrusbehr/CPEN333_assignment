@@ -44,6 +44,10 @@ int GasStationComputer::main(void) {
     m_pump2.m_signal = new CSemaphore("Pump2Signal", 0, 1);
     m_pump3.m_signal = new CSemaphore("Pump3Signal", 0, 1);
     m_pump4.m_signal = new CSemaphore("Pump4Signal", 0, 1);
+    m_pump1.m_clearSignal = new CSemaphore("Pump1ClearSignal", 0, 1);
+    m_pump2.m_clearSignal = new CSemaphore("Pump2ClearSignal", 0, 1);
+    m_pump3.m_clearSignal = new CSemaphore("Pump3ClearSignal", 0, 1);
+    m_pump4.m_clearSignal = new CSemaphore("Pump4ClearSignal", 0, 1);
     m_pump1.m_pumpNum = 1;
     m_pump2.m_pumpNum = 2;
     m_pump3.m_pumpNum = 3;
@@ -59,6 +63,12 @@ int GasStationComputer::main(void) {
     // Create child thread to constantly read from keyboard
     ClassThread<GasStationComputer> keyboardInputThread(this, &GasStationComputer::readFromKeyboard, ACTIVE, nullptr);
 
+    // Create child threads to wait on clear signal
+    ClassThread<GasStationComputer> pump1ClearThread(this, &GasStationComputer::waitForClearSignal, ACTIVE, &m_pump1);
+    ClassThread<GasStationComputer> pump2ClearThread(this, &GasStationComputer::waitForClearSignal, ACTIVE, &m_pump2);
+    ClassThread<GasStationComputer> pump3ClearThread(this, &GasStationComputer::waitForClearSignal, ACTIVE, &m_pump3);
+    ClassThread<GasStationComputer> pump4ClearThread(this, &GasStationComputer::waitForClearSignal, ACTIVE, &m_pump4);
+
     // Launch the child process
     CProcess p1("C:\\Users\\cyrus\\source\\repos\\Mech4\\CPEN_333\\Assignment1\\Debug\\Process1.exe",
         NORMAL_PRIORITY_CLASS,
@@ -68,8 +78,8 @@ int GasStationComputer::main(void) {
 
     // TODO we need rendevous in all of our child threads!
     // TODO attendant can change gas price
-    // TODO its 500 liters per grade, not per pump
     // TODO attendant can disable pumps
+    // Command so that attendant can display list of all transactions
 
     fuelTankStatusThread.WaitForThread();
     pump1StatusThread.WaitForThread();
@@ -78,6 +88,17 @@ int GasStationComputer::main(void) {
     pump4StatusThread.WaitForThread();
     keyboardInputThread.WaitForThread();
 
+    return 0;
+}
+
+int GasStationComputer::waitForClearSignal(void* args) {
+    while (true) {
+        // Wait for the clear signal
+        // When it is received, clear the display
+        auto status = static_cast<PumpStatusPtrLock*>(args);
+        status->m_clearSignal->Wait();
+        m_safePrint.clearSection(status->m_pumpNum);
+    }
     return 0;
 }
 
@@ -91,21 +112,26 @@ GasStationComputer::~GasStationComputer() {
     delete m_pump1.m_pumpConsumerLock;
     delete m_pump1.m_pumpProducerLock;
     delete m_pump1.m_signal;
+    delete m_pump1.m_clearSignal;
 
     delete m_pump2.m_pumpStatus;
     delete m_pump2.m_pumpConsumerLock;
     delete m_pump2.m_pumpProducerLock;
     delete m_pump2.m_signal;
+    delete m_pump2.m_clearSignal;
 
     delete m_pump3.m_pumpStatus;
     delete m_pump3.m_pumpConsumerLock;
     delete m_pump3.m_pumpProducerLock;
     delete m_pump3.m_signal;
+    delete m_pump3.m_clearSignal;
 
     delete m_pump4.m_pumpStatus;
     delete m_pump4.m_pumpConsumerLock;
     delete m_pump4.m_pumpProducerLock;
     delete m_pump4.m_signal;
+    delete m_pump4.m_clearSignal;
+
 
 }
 
@@ -216,7 +242,7 @@ int GasStationComputer::readFromKeyboard(void* args) {
 
 int GasStationComputer::checkPumpStatus(void* args) {
     // Thread Function
-    PumpStatusPtrLock* status = reinterpret_cast<PumpStatusPtrLock*>(args);
+    PumpStatusPtrLock* status = static_cast<PumpStatusPtrLock*>(args);
     auto& pStat = status->m_pumpStatus;
     while (true) {
         Transaction newTransaction;
