@@ -5,6 +5,9 @@
 
 constexpr int PIPE_SIZE = 1024;
 constexpr int MAX_FUELTANK_CAPACITY = 500;
+constexpr int MAX_NAME_LENGTH = 512;
+constexpr int CUSTOMER_SPAWN_MAX_TIME = 10;
+constexpr int GAS_FILL_SLEEP = 100; // miliseconds to sleep per 0.5 liters
 
 const std::string PUMP1_P_STR = "Pump1ProducerSemaphore";
 const std::string PUMP1_C_STR = "Pump1ConsumerSemaphore";
@@ -32,9 +35,9 @@ struct GasPrice {
 };
 
 struct CustomerPipelineData {
-    std::string m_name = "";
-    int m_ccNum = 0;
     GasGrade m_grade = GasGrade::G87;
+    char m_name[MAX_NAME_LENGTH];
+    int m_ccNum = 0;
     float m_liters = 0;
     float m_price = 0;
 };
@@ -45,7 +48,7 @@ struct FuelTankStatus {
 };
 
 struct PumpStatus {
-    std::string m_customerName = "";
+    char m_customerNameC[MAX_NAME_LENGTH];
     int m_creditCardNum = 0;
     float m_liters = 0.f;
     float m_price = 0.f;

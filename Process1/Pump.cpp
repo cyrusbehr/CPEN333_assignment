@@ -102,7 +102,7 @@ int Pump::main(void) {
             std::string priceStr = priceSS.str();
 
             // Print out the customer credentials
-            m_safePrint.sPrint("Name:   " + customerData.m_name, m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 5);
+            m_safePrint.sPrint("Name:   " + std::string(customerData.m_name, MAX_NAME_LENGTH), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 5);
             m_safePrint.sPrint("Liters: " + litersStr, m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 6);
             m_safePrint.sPrint("L Disp: " + std::to_string(m_currentCustomer->getLiters()), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 7);
             m_safePrint.sPrint("Price:  " + priceStr, m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 8);
@@ -114,7 +114,7 @@ int Pump::main(void) {
             // Lock the semaphore before modifying the data
             m_consumerSemaphore.Wait();
             m_pumpStatusPtr->m_creditCardNum = customerData.m_ccNum;
-            m_pumpStatusPtr->m_customerName = std::string(customerData.m_name);
+            strcpy_s(m_pumpStatusPtr->m_customerNameC, MAX_NAME_LENGTH, customerData.m_name);
             m_pumpStatusPtr->m_grade = customerData.m_grade;
             m_pumpStatusPtr->m_liters = customerData.m_liters;
             m_pumpStatusPtr->m_price = customerData.m_price;
@@ -151,10 +151,8 @@ int Pump::main(void) {
                 m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3);
 
                 // Sleep for 1 seconds
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                std::this_thread::sleep_for(std::chrono::milliseconds(GAS_FILL_SLEEP));
             }
-
-            //std::cout << "Finished!" << std::endl;
 
             // Delete the current customer
             m_currentCustomer->driveAway();

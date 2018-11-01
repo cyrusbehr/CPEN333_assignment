@@ -1,4 +1,5 @@
 #include "../IncludeFiles.h"
+#include "../Shared.h"
 #include "Pump.h"
 #include "Customer.h"
 #include "SafePrint.h"
@@ -33,7 +34,7 @@ int main(void) {
         pumpVec.at(pumpIdx)->addCustomer(newCustomer);
 
         // Wait 1 to 10 seconds before creating the next customer
-        sleepTime = rand() % (10 - 1 + 1) + 1;
+        sleepTime = rand() % (CUSTOMER_SPAWN_MAX_TIME - 1 + 1) + 1;
         std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
     }
 

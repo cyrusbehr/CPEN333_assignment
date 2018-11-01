@@ -224,7 +224,7 @@ int GasStationComputer::checkPumpStatus(void* args) {
 
         // Get new transaction information and add it to a record of all transactions
         newTransaction.m_cardNum = pStat->m_creditCardNum;
-        newTransaction.m_customerName = pStat->m_customerName;
+        newTransaction.m_customerName = std::string(pStat->m_customerNameC, MAX_NAME_LENGTH);
         newTransaction.m_grade = pStat->m_grade;
         newTransaction.m_liters = pStat->m_liters;
         newTransaction.m_price = pStat->m_price;

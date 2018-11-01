@@ -53,7 +53,7 @@ void Customer::purchaseGas() {
     CustomerPipelineData pipelineData;
     pipelineData.m_liters = static_cast<float>(rand() % (MAX_GAS_LITERS + 1));
     pipelineData.m_grade = generateGasGrade();
-    pipelineData.m_name = getName();
+    strcpy_s(pipelineData.m_name, MAX_NAME_LENGTH, getName().c_str());
     pipelineData.m_ccNum = getCCNumber();
 
     // Check that we have enough money, if not, reduce liters until it works out
