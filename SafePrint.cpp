@@ -1,10 +1,12 @@
 #pragma once
 #include "SafePrint.h"
 
-void SafePrint::sPrint(std::string str, int x, int y) {
+void SafePrint::sPrint(std::string str, int x, int y, Color color) {
     std::lock_guard<std::mutex> guard(m_mutex);
     MOVE_CURSOR(x, y);
+    TEXT_COLOUR(static_cast<int>(color), 0);
     printf("%s", str.c_str());
+    TEXT_COLOUR();
     fflush(stdout);
 }
 
@@ -38,21 +40,21 @@ int SafePrint::getRowSize() {
     return m_consoleRowSize;
 }
 
-void SafePrint::drawHorizontalLine(int y) {
+void SafePrint::drawHorizontalLine(int y, Color color) {
     for (int i = 0; i < getColumnSize(); ++i) {
-        sPrint("-", i, y);
+        sPrint("-", i, y, color);
     }
 }
 
-void SafePrint::drawVerticalLine(int x, int yStart) {
+void SafePrint::drawVerticalLine(int x, int yStart, Color color) {
     for (int i = yStart; i < getRowSize(); ++i) {
-        sPrint("|", x, i);
+        sPrint("|", x, i, color);
     }
 }
 
-void SafePrint::drawVerticalLine(int x, int yStart, int yEnd) {
+void SafePrint::drawVerticalLine(int x, int yStart, int yEnd, Color color) {
     for (int i = yStart; i < yEnd; ++i) {
-        sPrint("|", x, i);
+        sPrint("|", x, i, color);
     }
 }
 

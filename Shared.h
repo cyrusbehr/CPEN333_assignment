@@ -20,6 +20,25 @@ const std::string PUMP4_C_STR = "Pump4ConsumerSemaphore";
 
 const std::string FUEL_TANK_SEMAPHORE_STR = "FuelTankSemaphore";
 
+enum class Color {
+    BLACK = 0,
+    DARK_BLUE,
+    DARK_GREEN,
+    DARK_CYAN,
+    DARK_RED,
+    DARK_MAGENTA,
+    DARK_YELLOW,
+    GREY,
+    BLACK_TWO,
+    BLUE,
+    GREEN,
+    CYAN,
+    RED, 
+    MAGENTA,
+    YELLOW,
+    WHITE
+};
+
 enum class GasGrade {
     G87,
     G89,

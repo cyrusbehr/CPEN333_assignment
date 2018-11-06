@@ -10,11 +10,12 @@ int main(void) {
 
     SafePrint safePrint;
     std::string headerStr = "PUMP PROCESS";
-    safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length()/2, 0);
-    safePrint.drawHorizontalLine(1);
+    safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length()/2, 0, Color::GREEN);
+    safePrint.drawHorizontalLine(1, Color::MAGENTA);
 
     std::vector<std::unique_ptr<Pump>> pumpVec;
     // Create 4 pump objects, establish fuel tank and pump data pool connections
+
     pumpVec.push_back(std::make_unique<Pump>(safePrint, "Pump1", 1, "FuelTankDataPool", "Pump1DataPool", PUMP1_P_STR, PUMP1_C_STR));
     pumpVec.push_back(std::make_unique<Pump>(safePrint, "Pump2", 2, "FuelTankDataPool", "Pump2DataPool", PUMP2_P_STR, PUMP2_C_STR));
     pumpVec.push_back(std::make_unique<Pump>(safePrint, "Pump3", 3, "FuelTankDataPool", "Pump3DataPool", PUMP3_P_STR, PUMP3_C_STR));

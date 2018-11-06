@@ -15,18 +15,18 @@ int main(void) {
     // Create instance of safePrint class
     SafePrint safePrint;
     std::string headerStr = "GAS STATION PROCESS";
-    safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length() / 2, 0);
+    safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length() / 2, 0, Color::GREEN);
     
     // Build the grid
-    safePrint.drawHorizontalLine(1);
-    safePrint.drawHorizontalLine(4);
-    safePrint.drawHorizontalLine(11);
+    safePrint.drawHorizontalLine(1, Color::MAGENTA);
+    safePrint.drawHorizontalLine(4, Color::MAGENTA);
+    safePrint.drawHorizontalLine(11, Color::MAGENTA);
 
     for (int i = 0; i < 4; ++i) {
         // Create the title for each pump, center within the 
         std::string pumpName ("Pump" + std::to_string(i + 1));
         safePrint.sPrint(pumpName, safePrint.getColumnSize() / 8 - pumpName.length() / 2 + safePrint.getColumnSize() / 4 * (i), 2);
-        safePrint.drawVerticalLine(safePrint.getColumnSize() / 4 * (i), 5, 11);
+        safePrint.drawVerticalLine(safePrint.getColumnSize() / 4 * (i), 5, 11, Color::MAGENTA);
 
     }
 

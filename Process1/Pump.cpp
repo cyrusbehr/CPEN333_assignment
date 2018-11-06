@@ -50,9 +50,9 @@ int Pump::main(void) {
     m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3);
 
     // Draw the grid
-    m_safePrint.drawHorizontalLine(4);
-    m_safePrint.drawVerticalLine(m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 5);
-    m_safePrint.drawHorizontalLine(12);
+    m_safePrint.drawHorizontalLine(4, Color::MAGENTA);
+    m_safePrint.drawVerticalLine(m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 5, Color::MAGENTA);
+    m_safePrint.drawHorizontalLine(12, Color::MAGENTA);
     while (true) {
         // Check if we have a customer in the queue, if so, make them the current customer and remove them from the outstanding queue
         if (m_customerVec.size()) {

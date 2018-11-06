@@ -8,11 +8,11 @@
 class SafePrint {
 public:
     SafePrint();
-    void sPrint(std::string str, int x, int y);
+    void sPrint(std::string str, int x, int y, Color color = Color::BLACK);
 
     void clearColumn(int x, int yStart);
-    void drawHorizontalLine(int y);
-    void drawVerticalLine(int x, int yStart);
+    void drawHorizontalLine(int y, Color color = Color::BLACK);
+    void drawVerticalLine(int x, int yStart, Color color = Color::BLACK);
     int getRowSize();
     int getColumnSize();
     void clearSection(int pumpNum);

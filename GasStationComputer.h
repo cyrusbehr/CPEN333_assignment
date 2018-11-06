@@ -18,19 +18,19 @@ struct Transaction {
 };
 
 class GasStationComputer 
-    : public ActiveClass
-{
-public:
+    : public ActiveClass   
+{                          
+public:                    
     GasStationComputer(SafePrint& safePrint);
-    ~GasStationComputer();
-    int main(void);
-private:
+    ~GasStationComputer(); 
+    int main(void);        
+private:                   
     int checkFuelTankStatus(void* args);
     int checkPumpStatus(void* args);
     int readFromKeyboard(void* args);
     int waitForClearSignal(void* args);
-
-    // Data pool vars
+                           
+    // Data pool vars      
     FuelTankStatus* m_fuelTankStatusPtr    = nullptr;
 
     std::vector<Transaction> m_transactionVec;

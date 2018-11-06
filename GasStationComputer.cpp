@@ -137,6 +137,8 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
         // If any of the gas tanks have less than 200 liters, they should flash red
         // m_hasGas used to determine if there is enough gas to begin a gas up procedure
         // Block scope b/c colliding var name, easier than changing var names...
+
+        // TODO since adding new wrapper funcs need to ensure text turns red when < 250 liters
         m_fuelTankSemaphore.Wait();
         {
             if (m_fuelTankStatusPtr->m_gasVec[0] <= 200) {
