@@ -24,7 +24,7 @@
     <ClCompile Include="GasStationComputer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SafePrint.cpp">
+    <ClCompile Include="Shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,7 +35,7 @@
     <ClInclude Include="GasStationComputer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SafePrint.h">
+    <ClInclude Include="Shared.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

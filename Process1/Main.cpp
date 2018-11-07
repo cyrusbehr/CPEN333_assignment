@@ -2,13 +2,13 @@
 #include "../Shared.h"
 #include "Pump.h"
 #include "Customer.h"
-#include "SafePrint.h"
 
 int main(void) {
     // Seed the random function
     srand(time(NULL));
 
-    SafePrint safePrint;
+    std::mutex mtx;
+    SafePrint safePrint(mtx, 12);
     std::string headerStr = "PUMP PROCESS";
     safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length()/2, 0, Color::CYAN);
     safePrint.drawHorizontalLine(1, Color::MAGENTA);

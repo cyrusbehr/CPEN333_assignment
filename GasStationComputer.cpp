@@ -280,6 +280,11 @@ int GasStationComputer::readFromKeyboard(void* args) {
             m_fuelTankStatusPtr->m_prices.m_g92Price = newPrice;
             m_fuelTankSemaphore.Signal();
         }
+
+        // Redraw the vertical grid lines in case we draw over it
+        for (int i = 0; i < 4; ++i) {
+            m_safePrint.drawVerticalLine(m_safePrint.getColumnSize() / 4 * (i), 5, 11, Color::MAGENTA);
+        }
     }
     return 0;
 }

@@ -1,6 +1,5 @@
 #include "IncludeFiles.h"
 #include "GasStationComputer.h"
-#include "SafePrint.h"
 
 // BONUS FEATURES
 // 1) Use MOVE_CURSOR to display everything in really nice way
@@ -15,7 +14,8 @@ int main(void) {
     srand(time(NULL));
 
     // Create instance of safePrint class
-    SafePrint safePrint;
+    std::mutex mtx;
+    SafePrint safePrint(mtx, 11);
     std::string headerStr = "GAS STATION PROCESS";
     safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length() / 2, 0, Color::CYAN);
     

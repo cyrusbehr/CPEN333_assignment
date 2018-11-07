@@ -1,5 +1,5 @@
-#pragma once
-#include "SafePrint.h"
+#include "Shared.h"
+#include "../rt.h"
 
 void SafePrint::sPrint(std::string str, int x, int y, Color color) {
     std::lock_guard<std::mutex> guard(m_mutex);
@@ -25,7 +25,10 @@ std::string SafePrint::gradeToString(GasGrade grade) {
     }
 }
 
-SafePrint::SafePrint() {
+SafePrint::SafePrint(std::mutex& mtx, int secSize) 
+: m_mutex(mtx)
+{
+    m_sectionSize = secSize;
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     m_consoleCoslumSize = csbi.srWindow.Right - csbi.srWindow.Left + 1;
@@ -65,7 +68,8 @@ void SafePrint::clearColumn(int x, int yStart) {
 }
 
 void SafePrint::clearSection(int pumpNumber) {
-    for (int i = 5; i < 11; ++i) {
+    for (int i = 5; i < m_sectionSize; ++i) {
         sPrint("                             ", getColumnSize() / 4 * (pumpNumber - 1) + 1, i);
     }
 }
+
