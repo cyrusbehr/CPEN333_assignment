@@ -138,54 +138,29 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
         // m_hasGas used to determine if there is enough gas to begin a gas up procedure
         // Block scope b/c colliding var name, easier than changing var names...
 
-        // TODO since adding new wrapper funcs need to ensure text turns red when < 250 liters
         m_fuelTankSemaphore.Wait();
         {
-            if (m_fuelTankStatusPtr->m_gasVec[0] <= 200) {
-                TEXT_COLOUR(12, 0);
-                m_hasGas1 = false;
-            }
-            else {
-                m_hasGas1 = true;
-            }
+            m_hasGas1 = (m_fuelTankStatusPtr->m_gasVec[0] > 200);
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[0]);
-            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 0, 3);
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 0, 3, m_fuelTankStatusPtr->m_gasVec[0] <= 200? Color::DARK_RED : Color::GREEN);
             TEXT_COLOUR();
         }
         {
-            if (m_fuelTankStatusPtr->m_gasVec[1] <= 200) {
-                TEXT_COLOUR(12, 0);
-                m_hasGas2 = false;
-            }
-            else {
-                m_hasGas2 = true;
-            }
+            m_hasGas2 = (m_fuelTankStatusPtr->m_gasVec[1] > 200);
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[1]);
-            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 1, 3);
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 1, 3, m_fuelTankStatusPtr->m_gasVec[1] <= 200 ? Color::DARK_RED : Color::GREEN);
             TEXT_COLOUR();
         }
         {
-            if (m_fuelTankStatusPtr->m_gasVec[2] <= 200) {
-                TEXT_COLOUR(12, 0);
-                m_hasGas3 = false;
-            }
-            else {
-                m_hasGas3 = true;
-            }
+            m_hasGas3 = (m_fuelTankStatusPtr->m_gasVec[2] > 200);
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[2]);
-            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 2, 3);
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 2, 3, m_fuelTankStatusPtr->m_gasVec[2] <= 200 ? Color::DARK_RED : Color::GREEN);
             TEXT_COLOUR();
         }
         {
-            if (m_fuelTankStatusPtr->m_gasVec[3] <= 200) {
-                TEXT_COLOUR(12, 0);
-                m_hasGas4 = false;
-            }
-            else {
-                m_hasGas4 = true;
-            }
+            m_hasGas4 = (m_fuelTankStatusPtr->m_gasVec[3] > 200);
             std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[3]);
-            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 3, 3);
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 3, 3, m_fuelTankStatusPtr->m_gasVec[3] <= 200 ? Color::DARK_RED : Color::GREEN);
             TEXT_COLOUR();
         }
 
@@ -197,7 +172,7 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
 
 int GasStationComputer::readFromKeyboard(void* args) {
     std::string msg = "Enter a command [1/2/3/4 Dispense gas to pump 1/2/3/4, 5/6/7/8 refill tank 5/6/7/8, print to display all transactions, d1/d2/d3/d4 to disable pumps, set87/set89/set91/set92 to set new price for grades]";
-    m_safePrint.sPrint(msg, 0, 13);
+    m_safePrint.sPrint(msg, 0, 13, Color::DARK_YELLOW);
     while (true) {
         std::string cmd;
         std::cin >> cmd;

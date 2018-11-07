@@ -8,6 +8,8 @@
 // 3) Use of proper 3++. No global variables, Injection dependency, C++ 11 features (unique_ptr, lock_guard)
 //    Proper use of object oriented design, Shared files for code reduction, Only c++ style cast, ect 
 
+// Combine the two safeprint classes into 1 class which lives in shared, pass in ref to mtx
+
 int main(void) {
     // Seed the random timer
     srand(time(NULL));
@@ -15,7 +17,7 @@ int main(void) {
     // Create instance of safePrint class
     SafePrint safePrint;
     std::string headerStr = "GAS STATION PROCESS";
-    safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length() / 2, 0, Color::GREEN);
+    safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length() / 2, 0, Color::CYAN);
     
     // Build the grid
     safePrint.drawHorizontalLine(1, Color::MAGENTA);
@@ -25,7 +27,7 @@ int main(void) {
     for (int i = 0; i < 4; ++i) {
         // Create the title for each pump, center within the 
         std::string pumpName ("Pump" + std::to_string(i + 1));
-        safePrint.sPrint(pumpName, safePrint.getColumnSize() / 8 - pumpName.length() / 2 + safePrint.getColumnSize() / 4 * (i), 2);
+        safePrint.sPrint(pumpName, safePrint.getColumnSize() / 8 - pumpName.length() / 2 + safePrint.getColumnSize() / 4 * (i), 2, Color::DARK_GREEN);
         safePrint.drawVerticalLine(safePrint.getColumnSize() / 4 * (i), 5, 11, Color::MAGENTA);
 
     }

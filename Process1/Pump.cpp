@@ -16,7 +16,7 @@ Pump::Pump(SafePrint& safePrint, const std::string pumpName, const int pumpNum, 
     srand(static_cast<unsigned int>(time(NULL)));
 
     // Create the title for each pump, center within the container
-    m_safePrint.sPrint(m_pumpName, safePrint.getColumnSize() / 8 - m_pumpName.length()/2 + safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 2);
+    m_safePrint.sPrint(m_pumpName, safePrint.getColumnSize() / 8 - m_pumpName.length()/2 + safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 2, Color::DARK_GREEN);
 }
 
 Pump::~Pump() {
@@ -47,7 +47,7 @@ int Pump::main(void) {
     float gas = m_fuelTankStatusPtr->m_gasVec[0] ? m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1] : 400.f;
     m_fuelTankSemaphore.Signal();
     std::string gasString = "Liters: " + std::to_string(gas);
-    m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3);
+    m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3, gas > 200 ? Color::GREEN : Color::RED);
 
     // Draw the grid
     m_safePrint.drawHorizontalLine(4, Color::MAGENTA);
@@ -149,7 +149,7 @@ int Pump::main(void) {
                 auto gas = m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1];
                 m_fuelTankSemaphore.Signal();
                 std::string gasString = "Liters: " + std::to_string(gas);
-                m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3);
+                m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3, gas > 200 ? Color::GREEN : Color::RED);
 
                 // Sleep for 1 seconds
                 std::this_thread::sleep_for(std::chrono::milliseconds(GAS_FILL_SLEEP));

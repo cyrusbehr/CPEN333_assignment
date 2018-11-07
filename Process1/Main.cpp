@@ -10,7 +10,7 @@ int main(void) {
 
     SafePrint safePrint;
     std::string headerStr = "PUMP PROCESS";
-    safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length()/2, 0, Color::GREEN);
+    safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length()/2, 0, Color::CYAN);
     safePrint.drawHorizontalLine(1, Color::MAGENTA);
 
     std::vector<std::unique_ptr<Pump>> pumpVec;
