@@ -1,5 +1,5 @@
 #pragma once
-#include "..\rt.h"
+#include "\RTExamples\rt.h"
 #include "IncludeFiles.h"
 #include "Shared.h"
 
@@ -16,24 +16,29 @@ struct Transaction {
     Transaction();
 };
 
-class GasStationComputer 
-    : public ActiveClass   
-{                          
+class GasStationComputer : public ActiveClass {     
+
 public:                    
     GasStationComputer(SafePrint& safePrint);
     ~GasStationComputer(); 
-    int main(void);        
+    int main(void); 
+
 private:                   
     int checkFuelTankStatus(void* args);
     int checkPumpStatus(void* args);
     int readFromKeyboard(void* args);
     int waitForClearSignal(void* args);
                            
-    // Data pool vars      
-    FuelTankStatus* m_fuelTankStatusPtr    = nullptr;
+    // Reference to fuel tank status
+    FuelTankStatus* m_fuelTankStatusPtr = nullptr;
 
+	// Fuel Tank Semaphore
+	CSemaphore m_fuelTankSemaphore; //TODO: anything to do with this, abstract to separate Monitor class
+
+	// List of all gas transactions
     std::vector<Transaction> m_transactionVec;
 
+	// Pump struct definition
     struct PumpStatusPtrLock {
         PumpStatus* m_pumpStatus = nullptr;
         CSemaphore* m_pumpProducerLock = nullptr;
@@ -61,9 +66,6 @@ private:
     PumpStatusPtrLock m_pump2;
     PumpStatusPtrLock m_pump3;
     PumpStatusPtrLock m_pump4;
-
-    // FuelTank Semaphore
-    CSemaphore m_fuelTankSemaphore;
 
     // Reference to safePrint
     SafePrint& m_safePrint;

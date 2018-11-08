@@ -53,6 +53,7 @@ int Pump::main(void) {
     m_safePrint.drawHorizontalLine(4, Color::MAGENTA);
     m_safePrint.drawVerticalLine(m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 5, Color::MAGENTA);
     m_safePrint.drawHorizontalLine(12, Color::MAGENTA);
+
     while (true) {
         // Check if we have a customer in the queue, if so, make them the current customer and remove them from the outstanding queue
         if (m_customerVec.size()) {
@@ -60,7 +61,7 @@ int Pump::main(void) {
             m_customerVec.erase(m_customerVec.begin());
             int refCount = 13;
             
-            // Update the customers in queue
+            // Update the display of customers in queue for DOS Window
             m_safePrint.clearColumn(m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, refCount);
             for (const auto& customer : m_customerVec) {
                 m_safePrint.sPrint(customer->getName(), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, refCount++);
@@ -78,7 +79,6 @@ int Pump::main(void) {
             // Display the prices to the customer
             m_currentCustomer->setPrices(m_fuelTankStatusPtr->m_prices);
             m_fuelTankSemaphore.Signal();
-
 
             // Trigger the customer to purchase gas
             m_currentCustomer->purchaseGas();
@@ -110,7 +110,6 @@ int Pump::main(void) {
             m_safePrint.sPrint("Grade:  " + gradeToString(customerData.m_grade), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 9);
             m_safePrint.sPrint("CC Num: " + std::to_string(customerData.m_ccNum), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 10);
             m_safePrint.sPrint("Status: " + m_currentCustomer->getStatus(), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 11);
-
 
             // Lock the semaphore before modifying the data
             m_consumerSemaphore.Wait();
@@ -194,6 +193,7 @@ std::string Pump::getPipelineName() {
 void Pump::addCustomer(Customer* newCustomer) {
     m_customerVec.push_back(newCustomer);
     int refCount = 13;
+
     // Display the customers in queue
     m_safePrint.clearColumn(m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, refCount);
     for (const auto& customer : m_customerVec) {

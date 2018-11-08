@@ -1,14 +1,13 @@
 #include "../IncludeFiles.h"
 #include "Customer.h"
 #include "../Shared.h"
-#include "..\..\rt.h"
+#include "\RTExamples\rt.h"
 
 #pragma once
 #ifndef __Pump__
 #define __Pump__
 
-class Pump 
-: public ActiveClass{
+class Pump : public ActiveClass {
 public:
     Pump(SafePrint& safePrint, const std::string pumpName, const int pumpNum, const std::string fuelTankDataPoolStr, const std::string pumpStatusDataPoolStr, const std::string producerSemaphoreName, const std::string consumerSemaphoreString);
     ~Pump();
@@ -40,7 +39,6 @@ private:
     CSemaphore m_signal;
     CSemaphore m_fuelTankSemaphore;
     CSemaphore m_clearSignal;
-
 };
 
 

@@ -75,6 +75,7 @@ void Customer::purchaseGas() {
     default:
         break;
     }
+
     while (pricePerLiter * pipelineData.m_liters > m_money) {
         pipelineData.m_liters--;
     }

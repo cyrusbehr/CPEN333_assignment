@@ -7,27 +7,27 @@ int main(void) {
     // Seed the random function
     srand(time(NULL));
 
+	// Create UI for Pump DOS Window
     std::mutex mtx;
     SafePrint safePrint(mtx, 12);
     std::string headerStr = "PUMP PROCESS";
     safePrint.sPrint(headerStr, safePrint.getColumnSize() / 2 - headerStr.length()/2, 0, Color::CYAN);
     safePrint.drawHorizontalLine(1, Color::MAGENTA);
 
+	// Create 4 pump objects, establish fuel tank, and pump data pool connections
     std::vector<std::unique_ptr<Pump>> pumpVec;
-    // Create 4 pump objects, establish fuel tank and pump data pool connections
-
     pumpVec.push_back(std::make_unique<Pump>(safePrint, "Pump1", 1, "FuelTankDataPool", "Pump1DataPool", PUMP1_P_STR, PUMP1_C_STR));
     pumpVec.push_back(std::make_unique<Pump>(safePrint, "Pump2", 2, "FuelTankDataPool", "Pump2DataPool", PUMP2_P_STR, PUMP2_C_STR));
     pumpVec.push_back(std::make_unique<Pump>(safePrint, "Pump3", 3, "FuelTankDataPool", "Pump3DataPool", PUMP3_P_STR, PUMP3_C_STR));
     pumpVec.push_back(std::make_unique<Pump>(safePrint, "Pump4", 4, "FuelTankDataPool", "Pump4DataPool", PUMP4_P_STR, PUMP4_C_STR));
 
+	// Start each of the pump processes
     for (auto& pump : pumpVec) {
         pump->Resume();
     }
 
     int sleepTime = 0;
 
-    // Main loop which periodically creates 
     while (true) {
         // Create a new customer and randomly add them to a pump queue
         auto newCustomer = new Customer;
