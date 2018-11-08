@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\rt.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -27,15 +24,24 @@
     <ClCompile Include="Shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Z:\RTExamples\rt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FuelTankMonitor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\rt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GasStationComputer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shared.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Z:\RTExamples\rt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FuelTankMonitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
