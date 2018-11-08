@@ -9,8 +9,7 @@ Transaction::Transaction() {
 // MARK: Initializers
 
 GasStationComputer::GasStationComputer(SafePrint& safePrint)
-	:m_fuelTankSemaphore(FUEL_TANK_SEMAPHORE_STR, 1, 1)
-	, m_safePrint(safePrint)
+	:m_safePrint(safePrint)
 {}
 
 GasStationComputer::~GasStationComputer() {
@@ -46,20 +45,11 @@ int GasStationComputer::main(void) {
     CDataPool pump3DataPool("Pump3DataPool", sizeof(PumpStatus));
     CDataPool pump4DataPool("Pump4DataPool", sizeof(PumpStatus));
 
-	// Create fuel tank datapool to hold FuelTankStatus and link to local copy of the datapool so that we can read and write
-    CDataPool fuelTankDataPool("FuelTankDataPool", sizeof(FuelTankStatus));
-    m_fuelTankStatusPtr = static_cast<FuelTankStatus*>(fuelTankDataPool.LinkDataPool());
+	// Create instance of fuel tank monitor 
+	m_fuelTankMonitor = new FuelTankMonitor("FuelTankDataPool");
 
     // Set the initial quantity of gas for each of the 4 gas tanks
-    for (int i = 0; i < 4; ++i) {
-        m_fuelTankStatusPtr->m_gasVec[i] = MAX_FUELTANK_CAPACITY;
-    }
-
-    // Set the initial gas prices
-    m_fuelTankStatusPtr->m_prices.m_g87Price = 1.52f;
-    m_fuelTankStatusPtr->m_prices.m_g89Price = 1.58f;
-    m_fuelTankStatusPtr->m_prices.m_g91Price = 1.72f;
-    m_fuelTankStatusPtr->m_prices.m_g92Price = 1.97f;
+	m_fuelTankMonitor->initializeFuelTank();
 
 	// Link pump object's status with the appropriate pump's datapool
     m_pump1.m_pumpStatus = static_cast<PumpStatus*>(pump1DataPool.LinkDataPool());
@@ -146,33 +136,33 @@ int GasStationComputer::checkFuelTankStatus(void* args) {
         // m_hasGas used to determine if there is enough gas to begin a gas up procedure
         // Block scope b/c colliding var name, easier than changing var names...
 
-        m_fuelTankSemaphore.Wait();
+		m_fuelTankMonitor->wait();
         {
-            m_hasGas1 = (m_fuelTankStatusPtr->m_gasVec[0] > 200);
-            std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[0]);
-            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 0, 3, m_fuelTankStatusPtr->m_gasVec[0] <= 200? Color::DARK_RED : Color::GREEN);
+			m_hasGas1 = (m_fuelTankMonitor->getFuelQuantityForTank(0) > 200);
+            std::string gasString = "Liters: " + std::to_string(m_fuelTankMonitor->getFuelQuantityForTank(0));
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 0, 3, m_fuelTankMonitor->getFuelQuantityForTank(0) <= 200? Color::DARK_RED : Color::GREEN);
             TEXT_COLOUR();
         }
         {
-            m_hasGas2 = (m_fuelTankStatusPtr->m_gasVec[1] > 200);
-            std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[1]);
-            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 1, 3, m_fuelTankStatusPtr->m_gasVec[1] <= 200 ? Color::DARK_RED : Color::GREEN);
+            m_hasGas2 = (m_fuelTankMonitor->getFuelQuantityForTank(1) > 200);
+            std::string gasString = "Liters: " + std::to_string(m_fuelTankMonitor->getFuelQuantityForTank(1));
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 1, 3, m_fuelTankMonitor->getFuelQuantityForTank(1) <= 200 ? Color::DARK_RED : Color::GREEN);
             TEXT_COLOUR();
         }
         {
-            m_hasGas3 = (m_fuelTankStatusPtr->m_gasVec[2] > 200);
-            std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[2]);
-            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 2, 3, m_fuelTankStatusPtr->m_gasVec[2] <= 200 ? Color::DARK_RED : Color::GREEN);
+            m_hasGas3 = (m_fuelTankMonitor->getFuelQuantityForTank(2) > 200);
+            std::string gasString = "Liters: " + std::to_string(m_fuelTankMonitor->getFuelQuantityForTank(2));
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 2, 3, m_fuelTankMonitor->getFuelQuantityForTank(2) <= 200 ? Color::DARK_RED : Color::GREEN);
             TEXT_COLOUR();
         }
         {
-            m_hasGas4 = (m_fuelTankStatusPtr->m_gasVec[3] > 200);
-            std::string gasString = "Liters: " + std::to_string(m_fuelTankStatusPtr->m_gasVec[3]);
-            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 3, 3, m_fuelTankStatusPtr->m_gasVec[3] <= 200 ? Color::DARK_RED : Color::GREEN);
+            m_hasGas4 = (m_fuelTankMonitor->getFuelQuantityForTank(3) > 200);
+            std::string gasString = "Liters: " + std::to_string(m_fuelTankMonitor->getFuelQuantityForTank(3));
+            m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * 3, 3, m_fuelTankMonitor->getFuelQuantityForTank(3) <= 200 ? Color::DARK_RED : Color::GREEN);
             TEXT_COLOUR();
         }
 
-        m_fuelTankSemaphore.Signal();
+		m_fuelTankMonitor->signal();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
@@ -233,24 +223,16 @@ int GasStationComputer::readFromKeyboard(void* args) {
             }
         }
          else if (cmd == "5") {
-            m_fuelTankSemaphore.Wait();
-            m_fuelTankStatusPtr->m_gasVec[0] = MAX_FUELTANK_CAPACITY;
-            m_fuelTankSemaphore.Signal();
+			m_fuelTankMonitor->refillFuelTank(0);
         }
          else if (cmd == "6") {
-            m_fuelTankSemaphore.Wait();
-            m_fuelTankStatusPtr->m_gasVec[1] = MAX_FUELTANK_CAPACITY;
-            m_fuelTankSemaphore.Signal();
+			m_fuelTankMonitor->refillFuelTank(1);
         }
          else if (cmd == "7") {
-            m_fuelTankSemaphore.Wait();
-            m_fuelTankStatusPtr->m_gasVec[2] = MAX_FUELTANK_CAPACITY;
-            m_fuelTankSemaphore.Signal();
+			m_fuelTankMonitor->refillFuelTank(2);
         }
          else if (cmd == "8") {
-            m_fuelTankSemaphore.Wait();
-            m_fuelTankStatusPtr->m_gasVec[3] = MAX_FUELTANK_CAPACITY;
-            m_fuelTankSemaphore.Signal();
+			m_fuelTankMonitor->refillFuelTank(3);
         }
          else if (cmd == "d1") {
             m_isEnabledpump1 = !m_isEnabledpump1;
@@ -267,30 +249,22 @@ int GasStationComputer::readFromKeyboard(void* args) {
          else if (cmd == "set87") {
             float newPrice;
             std::cin >> newPrice;
-            m_fuelTankSemaphore.Wait();
-            m_fuelTankStatusPtr->m_prices.m_g87Price = newPrice;
-            m_fuelTankSemaphore.Signal();
+			m_fuelTankMonitor->setPriceForGasGrade(GasGrade::G87, newPrice);
         }
          else if (cmd == "set89") {
             float newPrice;
             std::cin >> newPrice;
-            m_fuelTankSemaphore.Wait();
-            m_fuelTankStatusPtr->m_prices.m_g89Price = newPrice;
-            m_fuelTankSemaphore.Signal();
+			m_fuelTankMonitor->setPriceForGasGrade(GasGrade::G89, newPrice);
         }
          else if (cmd == "set91") {
             float newPrice;
             std::cin >> newPrice;
-            m_fuelTankSemaphore.Wait();
-            m_fuelTankStatusPtr->m_prices.m_g91Price = newPrice;
-            m_fuelTankSemaphore.Signal();
+			m_fuelTankMonitor->setPriceForGasGrade(GasGrade::G91, newPrice);
         }
          else if (cmd == "set92") {
             float newPrice;
             std::cin >> newPrice;
-            m_fuelTankSemaphore.Wait();
-            m_fuelTankStatusPtr->m_prices.m_g92Price = newPrice;
-            m_fuelTankSemaphore.Signal();
+			m_fuelTankMonitor->setPriceForGasGrade(GasGrade::G92, newPrice);
         }
 
         // Redraw the vertical grid lines in case we draw over it

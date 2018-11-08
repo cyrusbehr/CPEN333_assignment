@@ -10,7 +10,6 @@ Pump::Pump(SafePrint& safePrint, const std::string pumpName, const int pumpNum, 
     , m_consumerSemaphore(consumerSemaphoreString, 1, 1)
     , m_signal(pumpName + "Signal", 0, 1)
     , m_clearSignal(pumpName + "ClearSignal", 0, 1)
-    , m_fuelTankSemaphore(FUEL_TANK_SEMAPHORE_STR, 1, 1)
 {
     // Seed the random function generator
     srand(static_cast<unsigned int>(time(NULL)));
@@ -27,9 +26,8 @@ Pump::~Pump() {
 }
 
 int Pump::main(void) {
-    // Connect to the fuel tank data pool
-    CDataPool fuelTankDataPool(m_fuelTankDataPoolStr, sizeof(FuelTankStatus));
-    m_fuelTankStatusPtr = static_cast<FuelTankStatus*>(fuelTankDataPool.LinkDataPool());
+	// Create instance of fuel tank monitor
+	m_fuelTankMonitor = new FuelTankMonitor(m_fuelTankDataPoolStr);
 
     // Connect to pump status data pool
     CDataPool pumpDataPool(m_pumpStatusDataPoolStr, sizeof(PumpStatus));
@@ -42,10 +40,10 @@ int Pump::main(void) {
     m_customerSemaphore = std::make_unique<CSemaphore>(getSemaphoreName(), 1, 1);
    
     // Draw liters in each fuel tank
-    m_fuelTankSemaphore.Wait();
+	m_fuelTankMonitor->wait();
     // Ternarary operator for debugging when launching Process1 without Assignmen1
-    float gas = m_fuelTankStatusPtr->m_gasVec[0] ? m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1] : 400.f;
-    m_fuelTankSemaphore.Signal();
+    float gas = m_fuelTankMonitor->getFuelQuantityForTank(0) ? m_fuelTankMonitor->getFuelQuantityForTank(m_pumpNum - 1) : 400.f;
+	m_fuelTankMonitor->signal();
     std::string gasString = "Liters: " + std::to_string(gas);
     m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3, gas > 200 ? Color::GREEN : Color::RED);
 
@@ -75,10 +73,9 @@ int Pump::main(void) {
             m_currentCustomer->createSemaphore(getSemaphoreName());
             m_currentCustomer->createPipeline(getPipelineName());
 
-            m_fuelTankSemaphore.Wait();
-            // Display the prices to the customer
-            m_currentCustomer->setPrices(m_fuelTankStatusPtr->m_prices);
-            m_fuelTankSemaphore.Signal();
+			// Display the prices to the customer
+			GasPrice prices = m_fuelTankMonitor->getCurrentGasPrices();
+			m_currentCustomer->setPrices(prices);
 
             // Trigger the customer to purchase gas
             m_currentCustomer->purchaseGas();
@@ -143,12 +140,9 @@ int Pump::main(void) {
                 m_safePrint.sPrint("L Disp: " + std::to_string(m_currentCustomer->getLiters()), m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1) + 1, 7);
 
                 // Decrement the value in the fuel storage by 0.5
-                m_fuelTankSemaphore.Wait();
-                m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1] -= 0.5;
-                auto gas = m_fuelTankStatusPtr->m_gasVec[m_pumpNum - 1];
-                m_fuelTankSemaphore.Signal();
-                std::string gasString = "Liters: " + std::to_string(gas);
-                m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3, gas > 200 ? Color::GREEN : Color::RED);
+				float currentFuelAmount = m_fuelTankMonitor->dispenseFuelFromTank(m_pumpNum - 1);
+                std::string gasString = "Liters: " + std::to_string(currentFuelAmount);
+                m_safePrint.sPrint(gasString, m_safePrint.getColumnSize() / 8 - gasString.length() / 2 + m_safePrint.getColumnSize() / 4 * (m_pumpNum - 1), 3, currentFuelAmount > 200 ? Color::GREEN : Color::RED);
 
                 // Sleep for 1 seconds
                 std::this_thread::sleep_for(std::chrono::milliseconds(GAS_FILL_SLEEP));

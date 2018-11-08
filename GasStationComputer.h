@@ -2,6 +2,7 @@
 #include "\RTExamples\rt.h"
 #include "IncludeFiles.h"
 #include "Shared.h"
+#include "FuelTankMonitor.h"
 
 #ifndef __GasStationComputer__
 #define __GasStationComputer__
@@ -28,12 +29,9 @@ private:
     int checkPumpStatus(void* args);
     int readFromKeyboard(void* args);
     int waitForClearSignal(void* args);
-                           
-    // Reference to fuel tank status
-    FuelTankStatus* m_fuelTankStatusPtr = nullptr;
 
-	// Fuel Tank Semaphore
-	CSemaphore m_fuelTankSemaphore; //TODO: anything to do with this, abstract to separate Monitor class
+	// Reference to the fuel tank monitor
+	FuelTankMonitor* m_fuelTankMonitor = nullptr;
 
 	// List of all gas transactions
     std::vector<Transaction> m_transactionVec;

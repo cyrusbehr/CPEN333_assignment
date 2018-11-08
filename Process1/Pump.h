@@ -1,6 +1,7 @@
 #include "../IncludeFiles.h"
 #include "Customer.h"
 #include "../Shared.h"
+#include "../FuelTankMonitor.h"
 #include "\RTExamples\rt.h"
 
 #pragma once
@@ -26,7 +27,7 @@ private:
     std::string m_pumpStatusDataPoolStr;
     
     int m_pumpNum = 0;
-    FuelTankStatus* m_fuelTankStatusPtr = nullptr;
+	FuelTankMonitor* m_fuelTankMonitor = nullptr;
     PumpStatus* m_pumpStatusPtr = nullptr;
     Customer* m_currentCustomer = nullptr;
     SafePrint& m_safePrint;
@@ -37,7 +38,6 @@ private:
     CSemaphore m_producerSemaphore;
     CSemaphore m_consumerSemaphore;
     CSemaphore m_signal;
-    CSemaphore m_fuelTankSemaphore;
     CSemaphore m_clearSignal;
 };
 
