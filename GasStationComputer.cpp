@@ -46,7 +46,7 @@ int GasStationComputer::main(void) {
     CDataPool pump4DataPool("Pump4DataPool", sizeof(PumpStatus));
 
 	// Create instance of fuel tank monitor 
-	m_fuelTankMonitor = new FuelTankMonitor("FuelTankDataPool");
+	m_fuelTankMonitor = std::make_unique<FuelTankMonitor>("FuelTankDataPool");
 
     // Set the initial quantity of gas for each of the 4 gas tanks
 	m_fuelTankMonitor->initializeFuelTank();
@@ -99,7 +99,7 @@ int GasStationComputer::main(void) {
     ClassThread<GasStationComputer> pump4ClearThread(this, &GasStationComputer::waitForClearSignal, ACTIVE, &m_pump4);
 
     // Launch the child process
-    CProcess p1("C:\\Users\\juneha\\Documents\\CPEN333_assignment\\Debug\\Process1.exe",
+    CProcess p1("C:\\Users\\cyrus\\source\\repos\\Mech4\\CPEN_333\\Assignment1\\Debug\\Process1.exe",
         NORMAL_PRIORITY_CLASS,
         OWN_WINDOW,
         ACTIVE

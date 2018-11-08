@@ -27,7 +27,7 @@ Pump::~Pump() {
 
 int Pump::main(void) {
 	// Create instance of fuel tank monitor
-	m_fuelTankMonitor = new FuelTankMonitor(m_fuelTankDataPoolStr);
+	m_fuelTankMonitor = std::make_unique<FuelTankMonitor>(m_fuelTankDataPoolStr);
 
     // Connect to pump status data pool
     CDataPool pumpDataPool(m_pumpStatusDataPoolStr, sizeof(PumpStatus));

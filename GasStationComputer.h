@@ -31,7 +31,7 @@ private:
     int waitForClearSignal(void* args);
 
 	// Reference to the fuel tank monitor
-	FuelTankMonitor* m_fuelTankMonitor = nullptr;
+	std::unique_ptr<FuelTankMonitor> m_fuelTankMonitor = nullptr;
 
 	// List of all gas transactions
     std::vector<Transaction> m_transactionVec;

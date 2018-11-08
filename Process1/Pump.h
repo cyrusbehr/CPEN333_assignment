@@ -27,7 +27,7 @@ private:
     std::string m_pumpStatusDataPoolStr;
     
     int m_pumpNum = 0;
-	FuelTankMonitor* m_fuelTankMonitor = nullptr;
+	std::unique_ptr<FuelTankMonitor> m_fuelTankMonitor = nullptr;
     PumpStatus* m_pumpStatusPtr = nullptr;
     Customer* m_currentCustomer = nullptr;
     SafePrint& m_safePrint;
